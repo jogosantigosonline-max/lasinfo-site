@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lista de Jogos da Live — Retro Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090d16;
+    --card: #131b2e;
+    --card-hover: #1a2642;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #f59e0b;
+    --accent-glow: rgba(245, 158, 11, 0.25);
+    --border: #1e293b;
+    --success: #10b981;
+    --ml-yellow: #ffe600;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .container {
+    width: 100%; max-width: 520px;
+    padding: 30px 20px 60px;
+    margin: 0 auto;
+  }
+  .header {
+    text-align: center; margin-bottom: 24px;
+  }
+  .logo-badge {
+    width: 68px; height: 68px; border-radius: 20px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; margin: 0 auto 14px;
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+  }
+  h1 {
+    font-size: 24px; font-weight: 800; margin: 0 0 6px;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    color: var(--muted); font-size: 14px; line-height: 1.5;
+    margin: 0 auto; max-width: 38ch;
+  }
+
+  /* Bloco Las Indica Rotativo (Mercado Livre) */
+  .ad-box {
+    background: linear-gradient(135deg, #1c0f38, #2a154f);
+    border: 1px solid var(--ml-yellow);
+    border-radius: 14px; padding: 18px;
+    margin-bottom: 20px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    transition: opacity 0.4s ease-in-out;
+  }
+  .ad-tag {
+    background: var(--ml-yellow); color: #111; font-size: 10px;
+    font-weight: 800; padding: 2px 6px; border-radius: 4px;
+    display: inline-block; margin-bottom: 6px; text-transform: uppercase; width: fit-content;
+  }
+  .ad-name { font-weight: 700; font-size: 14.5px; color: var(--text); margin-bottom: 12px; line-height: 1.3; }
+  .ad-btn {
+    display: inline-block; background: var(--ml-yellow); color: #111;
+    padding: 8px 14px; border-radius: 8px; font-weight: 800;
+    font-size: 12px; text-decoration: none; text-align: center; transition: all 0.2s ease;
+  }
+  .ad-btn:hover { background: #ffd000; transform: translateY(-1px); }
+  
+  /* Search Box */
+  .search-box {
+    position: relative; margin-bottom: 20px;
+  }
+  .search-input {
+    width: 100%; padding: 14px 16px 14px 44px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; color: var(--text); font-size: 14px;
+    font-family: 'Outfit', sans-serif; outline: none;
+    transition: all 0.2s ease;
+  }
+  .search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .search-icon {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    font-size: 16px; color: var(--muted);
+  }
+
+  /* Tabs Consoles */
+  .tabs-wrapper {
+    position: relative; margin-bottom: 20px;
+  }
+  .tabs {
+    display: flex; gap: 8px; overflow-x: auto;
+    padding: 2px 2px 8px; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto; padding: 10px 18px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); font-size: 13.5px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .tab.active {
+    background: var(--accent); color: #090d16;
+    border-color: var(--accent); font-weight: 700;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+
+  /* Game List */
+  .game-list {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .game-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; transition: all 0.2s ease;
+  }
+  .game-card:hover {
+    background: var(--card-hover);
+    border-color: rgba(245, 158, 11, 0.4);
+    transform: translateY(-1px);
+  }
+  .game-info {
+    flex: 1; min-width: 0;
+  }
+  .game-name {
+    font-weight: 600; font-size: 15px; color: var(--text);
+    margin: 0 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .game-command {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent); background: rgba(245, 158, 11, 0.1);
+    padding: 3px 8px; border-radius: 6px; display: inline-block;
+  }
+  .copy-btn {
+    background: var(--border); border: none; color: var(--text);
+    padding: 8px 14px; border-radius: 10px; font-size: 12.5px;
+    font-weight: 600; cursor: pointer; transition: all 0.15s ease;
+    display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+  }
+  .copy-btn:hover {
+    background: var(--accent); color: #090d16;
+  }
+  .copy-btn.copied {
+    background: var(--success); color: #fff;
+  }
+
+  .empty-state {
+    text-align: center; padding: 40px 20px; color: var(--muted);
+    font-size: 14px; background: var(--card); border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+
+  footer {
+    text-align: center; margin-top: 40px; color: var(--muted);
+    font-size: 12px; line-height: 1.6;
+  }
+  footer strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo-badge">🎮</div>
+    <h1>Lista de Jogos da Live</h1>
+    <p class="subtitle">Pesquise o seu jogo favorito, copie o comando e cole direto no chat da live!</p>
+  </div>
+
+  <!-- Bloco Las Indica Rotativo (Mercado Livre) -->
+  <div class="ad-box" id="adBox">
+    <span class="ad-tag">Las Indica 🛒</span>
+    <div class="ad-name" id="adName">Controle Para Xbox 360 Com Fio Joystick Manete Gamepass Steam Tv Pc Android - R$ 46,07</div>
+    <a href="https://meli.la/2inqeW2" target="_blank" class="ad-btn" id="adBtn">Ver Oferta no Mercado Livre 🔗</a>
+  </div>
+
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar jogo (ex: Mario, Contra, Sonic)..." oninput="filterGames()">
+  </div>
+
+  <div class="tabs" id="tabsContainer"></div>
+  
+  <div id="gameListContainer" class="game-list"></div>
+
+  <footer>
+    Desenvolvido para lives de Retrogaming 🚀<br>
+    Divirta-se e aproveite os clássicos!
+  </footer>
+</div>
+
+<script>
+// Lista de produtos para o banner rotativo do Mercado Livre
+const ads = [
+  {
+    name: "Controle Para Xbox 360 Com Fio Joystick Manete Gamepass Steam Tv Pc Android — R$ 46,07",
+    url: "https://meli.la/2inqeW2"
+  },
+  {
+    name: "Adaptador Videogame Game Stick M15 2 Controles Game Stick — R$ 219,90",
+    url: "https://meli.la/2kxZ49N"
+  }
+];
+
+let currentAdIndex = 0;
+
+function rotateAds() {
+  const adBox = document.getElementById('adBox');
+  const adName = document.getElementById('adName');
+  const adBtn = document.getElementById('adBtn');
+
+  // Efeito suave de transição (fade out)
+  adBox.style.opacity = 0;
+
+  setTimeout(() => {
+    currentAdIndex = (currentAdIndex + 1) % ads.length;
+    adName.textContent = ads[currentAdIndex].name;
+    adBtn.href = ads[currentAdIndex].url;
+    // Efeito suave de retorno (fade in)
+    adBox.style.opacity = 1;
+  }, 400);
+}
+
+// Trocar a propaganda a cada 7 segundos
+setInterval(rotateAds, 7000);
+
+// Dados completos extraídos rigorosamente da folha Excel original
+const database = [
+  {
+    category: "Atari",
+    items: [
+      { name: "enduro", command: "!jogo atari enduro" },
+      { name: "Abadox", command: "!jogo atari pac man" },
+      { name: "rive raid", command: "!jogo atari river raid" },
+      { name: "pitfall", command: "!jogo atari pitfall" }
+    ]
+  },
+  {
+    category: "Nintendinho",
+    items: [
+      { name: "1943", command: "!jogo nes 1943" },
+      { name: "Abadox", command: "!jogo nes abadox" },
+      { name: "Addams Family", command: "!jogo nes addams" },
+      { name: "Arkanoid", command: "!jogo nes arkanoid" },
+      { name: "Astyanax", command: "!jogo nes astyanax" },
+      { name: "Balloon Fight", command: "!jogo nes balloon" },
+      { name: "Batman (Return of the Joker)", command: "!jogo nes batman" },
+      { name: "Battle City", command: "!jogo nes battle city" },
+      { name: "Battleship", command: "!jogo nes battleship" },
+      { name: "Battletoads", command: "!jogo nes battletoads" },
+      { name: "Bionic Commando", command: "!jogo nes bionic" },
+      { name: "Bomberman", command: "!jogo nes bomberman" },
+      { name: "Bubble Bobble Part 2", command: "!jogo nes bubble bobble" },
+      { name: "Bucky O'Hare", command: "!jogo nes bucky" },
+      { name: "Captain America and the Avengers", command: "!jogo nes captain america" },
+      { name: "Captain Planet", command: "!jogo nes captain planet" },
+      { name: "Castlevania", command: "!jogo nes castlevania" },
+      { name: "Circus Charlie", command: "!jogo nes circus" },
+      { name: "Clu Clu Land", command: "!jogo nes clu clu" },
+      { name: "Commando", command: "!jogo nes commando" },
+      { name: "Contra", command: "!jogo nes contra" },
+      { name: "Crisis Force", command: "!jogo nes crisis" },
+      { name: "Dig Dug", command: "!jogo nes dig dug" },
+      { name: "Donkey Kong", command: "!jogo nes donkey kong" },
+      { name: "Double Dragon", command: "!jogo nes double" },
+      { name: "DuckTales", command: "!jogo nes ducktales" },
+      { name: "Eliminator Boat Duel", command: "!jogo nes eliminator" },
+      { name: "Excitebike", command: "!jogo nes excitebike" },
+      { name: "Felix the Cat", command: "!jogo nes felix" },
+      { name: "Flintstones", command: "!jogo nes flintstones" },
+      { name: "Frankenstein", command: "!jogo nes frankenstein" },
+      { name: "Fuzzical Fighter", command: "!jogo nes fuzzical" },
+      { name: "Goal!", command: "!jogo nes goal" },
+      { name: "Galaga", command: "!jogo nes galaga" },
+      { name: "Galaxian", command: "!jogo nes galaxian" },
+      { name: "Gradius", command: "!jogo nes gradius" },
+      { name: "Gun.Smoke", command: "!jogo nes gun smoke" },
+      { name: "Hudson Hawk", command: "!jogo nes hudson hawk" },
+      { name: "Hudson's Adventure Island", command: "!jogo nes adventure island" },
+      { name: "Ice Climber", command: "!jogo nes ice climber" },
+      { name: "Jackie Chan's Action Kung Fu", command: "!jogo nes jackie chan" },
+      { name: "Mario Runner 2", command: "!jogo nes mario runner" },
+      { name: "Micro Mages", command: "!jogo nes micro mages" },
+      { name: "Mike Tyson's Punch-Out!!", command: "!jogo nes punch-out" },
+      { name: "Monster in My Pocket", command: "!jogo nes monster" },
+      { name: "Ms. Pac-Man", command: "!jogo nes ms. pac-man" },
+      { name: "Nightshade", command: "!jogo nes nightshade" },
+      { name: "P.O.W.", command: "!jogo nes pow" },
+      { name: "Pac-Man", command: "!jogo nes pac-man" },
+      { name: "Pipe Dream", command: "!jogo nes pipe dream" },
+      { name: "Power Blazer", command: "!jogo nes power blazer" },
+      { name: "Road Fighter", command: "!jogo nes road fighter" },
+      { name: "RoboCop", command: "!jogo nes robocop" },
+      { name: "Rockin' Kats", command: "!jogo nes rockin" },
+      { name: "Rollergames", command: "!jogo nes rollergames" },
+      { name: "Roto Runner", command: "!jogo nes roto runner" },
+      { name: "Rygar", command: "!jogo nes rygar" },
+      { name: "Silver Surfer", command: "!jogo nes silver surfer" },
+      { name: "Soccer", command: "!jogo nes soccer" },
+      { name: "Star Wars", command: "!jogo nes star wars" },
+      { name: "Street Fighter 2010", command: "!jogo nes street fighter" },
+      { name: "Super Mario Bros. 2", command: "!jogo nes super mario 2" },
+      { name: "Super Mario Bros. 3", command: "!jogo nes super mario 3" },
+      { name: "Super Mario Kart Raider", command: "!jogo nes kart raider" },
+      { name: "Super Mario", command: "!jogo nes super mario" },
+      { name: "Super Pitfall", command: "!jogo nes super pitfall" },
+      { name: "Teenage Mutant Ninja Turtles", command: "!jogo nes Teenage Mutant Ninja Turtles" },
+      { name: "Teenage Mutant Ninja Turtles II", command: "!jogo nes Teenage Mutant Ninja Turtles 2" },
+      { name: "Teenage Mutant Ninja Turtles III", command: "!jogo nes Teenage Mutant Ninja Turtles 3" },
+      { name: "Tennis", command: "!jogo nes tennis" },
+      { name: "Terminator 2", command: "!jogo nes terminator 2" },
+      { name: "Tetris", command: "!jogo nes tetris" },
+      { name: "Tiny Toon Adventures", command: "!jogo nes tiny toon" },
+      { name: "Volleyball", command: "!jogo nes volleyball" },
+      { name: "Wolverine", command: "!jogo nes wolverine" },
+      { name: "Yo! Noid", command: "!jogo nes yo noid" }
+    ]
+  },
+  {
+    category: "Super Nintendo",
+    items: [
+      { name: "ActRaiser", command: "!jogo snes actraiser" },
+      { name: "Addams Family", command: "!jogo snes addams family" },
+      { name: "Adventures of Dr. Franken", command: "!jogo snes dr franken" },
+      { name: "Aero Fighters", command: "!jogo snes aero fighters" },
+      { name: "Aerobiz", command: "!jogo snes aerobiz" },
+      { name: "Aladdin", command: "!jogo snes aladdin" },
+      { name: "Alcahest", command: "!jogo snes alcahest" },
+      { name: "Alien 3", command: "!jogo snes alien 3" },
+      { name: "Animaniacs", command: "!jogo snes animaniacs" },
+      { name: "Arcana", command: "!jogo snes arcana" },
+      { name: "Arkanoid", command: "!jogo snes arkanoid" },
+      { name: "Battle Cars", command: "!jogo snes battle cars" },
+      { name: "Battletoads & Double Dragon", command: "!jogo snes battletoads double dragon" },
+      { name: "Biker Mice from Mars", command: "!jogo snes biker mice" },
+      { name: "BioMetal", command: "!jogo snes biometal" },
+      { name: "Bobby's World", command: "!jogo snes bobby world" },
+      { name: "Bonkers", command: "!jogo snes bonkers" },
+      { name: "Captain America and the Avengers", command: "!jogo snes captain america" },
+      { name: "Captain Commando", command: "!jogo snes captain commando" },
+      { name: "Captain Tsubasa V", command: "!jogo snes captain tsubasa" },
+      { name: "Castlevania - Dracula X", command: "!jogo snes castlevania dracula" },
+      { name: "Choplifter III", command: "!jogo snes choplifter" },
+      { name: "Chrono Trigger", command: "!jogo snes chrono trigger" },
+      { name: "Civilization", command: "!jogo snes civilization" },
+      { name: "Combatribes", command: "!jogo snes combatribes" },
+      { name: "Cool Spot", command: "!jogo snes cool spot" },
+      { name: "Cutthroat Island", command: "!jogo snes cutthroat" },
+      { name: "Cybernator", command: "!jogo snes cybernator" },
+      { name: "Daffy Duck - The Marvin Missions", command: "!jogo snes daffy duck" },
+      { name: "Dark Half", command: "!jogo snes dark half" },
+      { name: "Demolition Man", command: "!jogo snes demolition man" },
+      { name: "Demon's Crest", command: "!jogo snes demon crest" },
+      { name: "Disney's Pinocchio", command: "!jogo snes pinocchio" },
+      { name: "Donkey Kong Country", command: "!jogo snes donkey kong " },
+      { name: "Donkey Kong Country 2", command: "!jogo snes Donkey Kong Country 2" },
+      { name: "Donkey Kong Country 3", command: "!jogo snes donkey kong 3" },
+      { name: "Dottie Dreads Nought", command: "!jogo snes dottie dreads" },
+      { name: "EarthBound", command: "!jogo snes earthbound" },
+      { name: "Earthworm Jim 2", command: "!jogo snes earthworm jim 2" },
+      { name: "Final Fight", command: "!jogo snes final fight " },
+      { name: "Final Fight 2", command: "!jogo snes final fight 2" },
+      { name: "Final Fight 3", command: "!jogo snes final fight 3" },
+      { name: "Fire Striker", command: "!jogo snes fire striker" },
+      { name: "Flashback", command: "!jogo snes flashback" },
+      { name: "Futebol Brasileiro 96", command: "!jogo snes futebol brasileiro" },
+      { name: "Ganpuru - Gunman's Proof", command: "!jogo snes gunman proof" },
+      { name: "Goof Troop", command: "!jogo snes goof troop" },
+      { name: "Gradius III", command: "!jogo snes gradius " },
+      { name: "Hyper V-Ball", command: "!jogo snes hyper " },
+      { name: "International Super Star Soccer Deluxe", command: "!jogo snes soccer deluxe" },
+      { name: "Jetsons - Invasion", command: "!jogo snes jetsons" },
+      { name: "Joe & Mac 2", command: "!jogo snes joe mac 2" },
+      { name: "Jungle Book", command: "!jogo snes jungle book" },
+      { name: "Lion King(rei leao)", command: "!jogo snes Lion King" },
+      { name: "Legend", command: "!jogo snes legend" },
+      { name: "Looney Tunes B-Ball", command: "!jogo snes looney tunes" },
+      { name: "Lost Vikings 2", command: "!jogo snes lost vikings 2" },
+      { name: "Marvel Super Heroes", command: "!jogo snes marvel super" },
+      { name: "Mask", command: "!jogo snes mask" },
+      { name: "Metal Warriors", command: "!jogo snes metal warriors" },
+      { name: "Mortal Kombat", command: "!jogo snes mortal kombat " },
+      { name: "Mortal Kombat 3", command: "!jogo snes mortal kombat 3" },
+      { name: "NBA Live 95", command: "!jogo snes nba live 95" },
+      { name: "Nosferatu", command: "!jogo snes nosferatu" },
+      { name: "Panic in Nakayoshi World", command: "!jogo snes panic nakayoshi" },
+      { name: "Pitfall - The Mayan Adventure", command: "!jogo snes pitfall" },
+      { name: "Popeye", command: "!jogo snes popeye" },
+      { name: "Rock n' Roll Racing", command: "!jogo snes rock n roll" },
+      { name: "Romancing SaGa 3", command: "!jogo snes romancing saga" },
+      { name: "Ronaldinho Soccer 97", command: "!jogo snes ronaldinho" },
+      { name: "Rushing Beat Shura", command: "!jogo snes rushing beat" },
+      { name: "Scooby-Doo Mystery", command: "!jogo snes scooby doo" },
+      { name: "Side Pocket", command: "!jogo snes side pocket" },
+      { name: "SimCity", command: "!jogo snes simcity" },
+      { name: "Skyblazer", command: "!jogo snes skyblazer" },
+      { name: "Snoopy Concert", command: "!jogo snes snoopy" },
+      { name: "Soldiers of Fortune", command: "!jogo snes soldiers fortune" },
+      { name: "Space Ace", command: "!jogo snes space ace" },
+      { name: "Sparkster", command: "!jogo snes sparkster" },
+      { name: "Spawn", command: "!jogo snes spawn" },
+      { name: "Speedy Gonzales", command: "!jogo snes speedy gonzales" },
+      { name: "SpellCraft", command: "!jogo snes spellcraft" },
+      { name: "Super Mario World 2", command: "!jogo snes super mario 2" },
+      { name: "Spider-Man & Venom", command: "!jogo snes spider man venom" },
+      { name: "Star Ocean", command: "!jogo snes star ocean" },
+      { name: "Stone Protectors", command: "!jogo snes stone protectors" },
+      { name: "Strike Gunner", command: "!jogo snes strike gunner" },
+      { name: "Sunset Riders", command: "!jogo snes sunset riders" },
+      { name: "Super Aleste", command: "!jogo snes super aleste" },
+      { name: "Super Bomberman 2", command: "!jogo snes super bomberman 2" },
+      { name: "Super Copa", command: "!jogo snes super copa" },
+      { name: "Super Mario All-Stars", command: "!jogo snes mario all stars" },
+      { name: "Super Mario World", command: "!jogo snes mario world" },
+      { name: "Super Mario Kart", command: "!jogo snes mario kart" },
+      { name: "Super Morph", command: "!jogo snes super morph" },
+      { name: "Super Pang", command: "!jogo snes super pang" },
+      { name: "Tecmo Secret of the Stars", command: "!jogo snes secret of the stars" },
+      { name: "Tenchi Muyou!", command: "!jogo snes tenchi muyou" },
+      { name: "Terranigma", command: "!jogo snes terranigma" },
+      { name: "Theme Park", command: "!jogo snes theme park" },
+      { name: "Tick, The", command: "!jogo snes tick" },
+      { name: "Time Slip", command: "!jogo snes time slip" },
+      { name: "Tiny Toon Adventures", command: "!jogo snes tiny toon" },
+      { name: "Tom & Jerry", command: "!jogo snes tom jerry" },
+      { name: "Top Gear", command: "!jogo snes top gear " },
+      { name: "Top Gear 2", command: "!jogo snes top gear 2" },
+      { name: "Top Gear 3000", command: "!jogo snes top gear 3000" },
+      { name: "Trials of Mana", command: "!jogo snes trials of mana" },
+      { name: "True Lies", command: "!jogo snes true lies" },
+      { name: "Ultimate Mortal Kombat 3", command: "!jogo snes ultimate  3" },
+      { name: "wild guns", command: "!jogo snes wild guns" },
+      { name: "Warlock", command: "!jogo snes warlock" },
+      { name: "Winter Olympic Games", command: "!jogo snes winter olympic" },
+      { name: "Zombies Ate My Neighbors", command: "!jogo snes Zombies" }
+    ]
+  },
+  {
+    category: "Mega Drive",
+    items: [
+      { name: "A Lenda de Thor", command: "!jogo mega lenda de thor" },
+      { name: "Addams Family", command: "!jogo mega addams family" },
+      { name: "Aero the Acro-Bat", command: "!jogo mega aero acro bat" },
+      { name: "After Burner II", command: "!jogo mega after burner 2" },
+      { name: "Air Buster", command: "!jogo mega  air buster" },
+      { name: "Aladdin", command: "!jogo mega aladdin" },
+      { name: "Alex Kidd in the Enchanted Castle", command: "!jogo mega alex kidd" },
+      { name: "Alien Storm", command: "!jogo mega alien storm" },
+      { name: "Altered Beast", command: "!jogo mega altered beast" },
+      { name: "Atomic Robo-Kid", command: "!jogo mega atomic robo kid" },
+      { name: "Ayrton Senna's Super Monaco GP II", command: "!jogo mega senna monaco" },
+      { name: "Batman - Revenge of the Joker", command: "!jogo mega batman joker" },
+      { name: "Battle Mania Daiginjou", command: "!jogo mega battle mania" },
+      { name: "Battletoads", command: "!jogo mega battletoads" },
+      { name: "Beauty and the Beast", command: "!jogo mega beauty beast" },
+      { name: "Beyond Oasis", command: "!jogo mega beyond oasis" },
+      { name: "Bio Hazard Battle", command: "!jogo mega bio hazard" },
+      { name: "Body Count", command: "!jogo mega body count" },
+      { name: "Bonanza Bros", command: "!jogo mega bonanza bros" },
+      { name: "Caliber.50", command: "!jogo mega caliber 50" },
+      { name: "California Games", command: "!jogo mega california games" },
+      { name: "Captain Planet", command: "!jogo mega captain planet" },
+      { name: "Castlevania - Bloodlines", command: "!jogo mega castlevania bloodlines" },
+      { name: "Chakan", command: "!jogo mega chakan" },
+      { name: "Chip 'n Dale - Rescue Rangers", command: "!jogo mega chip dale" },
+      { name: "Chuck Rock", command: "!jogo mega chuck rock" },
+      { name: "Comix Zone", command: "!jogo mega comix zone" },
+      { name: "Contra - Hard Corps", command: "!jogo mega contra hard corps" },
+      { name: "Danan the Jungle Fighter", command: "!jogo mega danan" },
+      { name: "Desert Strike", command: "!jogo mega desert strike" },
+      { name: "Dinosaur's Tale", command: "!jogo mega dinosaur tale" },
+      { name: "DJ Boy", command: "!jogo mega dj boy" },
+      { name: "Donald in Maui Mallard", command: "!jogo mega donald maui" },
+      { name: "Dragon - The Bruce Lee Story", command: "!jogo mega bruce lee story" },
+      { name: "Duke Nukem 3D", command: "!jogo mega duke nukem 3d" },
+      { name: "Dynamite Duke", command: "!jogo mega dynamite duke" },
+      { name: "Earnest Evans", command: "!jogo mega earnest evans" },
+      { name: "Ecco the Dolphin", command: "!jogo mega ecco dolphin" },
+      { name: "El.Viento", command: "!jogo mega el viento" },
+      { name: "Elemental Master", command: "!jogo mega elemental master" },
+      { name: "ESWAT", command: "!jogo mega eswat" },
+      { name: "Flicky", command: "!jogo mega Flicky" },
+      { name: "Felix the Cat", command: "!jogo mega felix cat" },
+      { name: "Ferias Frustradas do Pica-Pau", command: "!jogo mega pica pau" },
+      { name: "FIFA International Soccer", command: "!jogo mega fifa 95" },
+      { name: "FIFA Soccer 2000", command: "!jogo mega fifa 2000" },
+      { name: "Fighting Masters", command: "!jogo mega fighting masters" },
+      { name: "Final Zone", command: "!jogo mega final zone" },
+      { name: "Flashback", command: "!jogo mega flashback" },
+      { name: "Flintstones", command: "!jogo mega flintstones" },
+      { name: "Fushigi no Umi no Nadia", command: "!jogo mega nadia" },
+      { name: "Gaiares", command: "!jogo mega gaiares" },
+      { name: "Gargoyles", command: "!jogo mega gargoyles" },
+      { name: "Generations Lost", command: "!jogo mega generations lost" },
+      { name: "Ghouls 'n Ghosts", command: "!jogo mega ghouls ghosts" },
+      { name: "Gods", command: "!jogo mega gods" },
+      { name: "Golden Axe", command: "!jogo mega golden axe" },
+      { name: "Goofy's Hysterical History Tour", command: "!jogo mega goofy history" },
+      { name: "Greendog", command: "!jogo mega greendog" },
+      { name: "Griels Quest for the Holy", command: "!jogo mega griels quest" },
+      { name: "Haunting Starring Polterguy", command: "!jogo mega haunting" },
+      { name: "Insector X", command: "!jogo mega insector x" },
+      { name: "James Bond 007 - The Duel", command: "!jogo mega james bond duel" },
+      { name: "Jewel Master", command: "!jogo mega jewel master" },
+      { name: "Joe & Mac", command: "!jogo mega joe mac" },
+      { name: "Journey from Darkness", command: "!jogo mega strider returns" },
+      { name: "JuJu Densetsu", command: "!jogo mega juju densetsu" },
+      { name: "Jungle Strike", command: "!jogo mega jungle strike" },
+      { name: "Justice League Task Force", command: "!jogo mega justice league" },
+      { name: "Kid Chameleon", command: "!jogo mega kid chameleon" },
+      { name: "Lemmings", command: "!jogo mega lemmings" },
+      { name: "Lost World - Jurassic Park", command: "!jogo mega lost world" },
+      { name: "Mario & Battle City", command: "!jogo mega mario battle city" },
+      { name: "McDonald's Treasure Land", command: "!jogo mega mcdonalds" },
+      { name: "Mega Turrican", command: "!jogo mega mega turrican" },
+      { name: "Mercs", command: "!jogo mega mercs" },
+      { name: "Michael Jackson's Moonwalker", command: "!jogo mega moonwalker" },
+      { name: "Micro Machines", command: "!jogo mega micro machines" },
+      { name: "Midnight Resistance", command: "!jogo mega midnight resistance" },
+      { name: "Monster World IV", command: "!jogo mega monster world 4" },
+      { name: "Mortal Kombat", command: "!jogo mega mortal kombat 1" },
+      { name: "MUSHA", command: "!jogo mega musha" },
+      { name: "Mystic Defender", command: "!jogo mega mystic defender" },
+      { name: "New Zealand Story", command: "!jogo mega new zealand" },
+      { name: "Nightmare Circus", command: "!jogo mega nightmare circus" },
+      { name: "OutRun", command: "!jogo mega outrun" },
+      { name: "Pac-Mania", command: "!jogo mega pac mania" },
+      { name: "Paperboy", command: "!jogo mega paperboy" },
+      { name: "Phelios", command: "!jogo mega phelios" },
+      { name: "Pinocchio", command: "!jogo mega pinocchio" },
+      { name: "Pirates of Dark Water", command: "!jogo mega pirates dark water" },
+      { name: "Pit-Fighter", command: "!jogo mega pit fighter" },
+      { name: "Pocahontas", command: "!jogo mega pocahontas" },
+      { name: "Power Drive", command: "!jogo mega power drive" },
+      { name: "Predator 2", command: "!jogo mega predator 2" },
+      { name: "Pulseman", command: "!jogo mega pulseman" },
+      { name: "Punisher", command: "!jogo mega punisher" },
+      { name: "QuackShot", command: "!jogo mega quackshot" },
+      { name: "Raiden Densetsu", command: "!jogo mega raiden trad" },
+      { name: "Rambo III", command: "!jogo mega rambo 3" },
+      { name: "Ranger X", command: "!jogo mega ranger x" },
+      { name: "Revenge of Shinobi", command: "!jogo mega revenge shinobi" },
+      { name: "Ristar", command: "!jogo mega ristar" },
+      { name: "Road Rash", command: "!jogo mega road rash" },
+      { name: "RoboCop 3", command: "!jogo mega robocop 3" },
+      { name: "Rocket Knight Adventures", command: "!jogo mega rocket knight" },
+      { name: "Rolling Thunder 2", command: "!jogo mega rolling thunder 2" },
+      { name: "Ronaldinho '98", command: "!jogo mega ronaldinho 98" },
+      { name: "Scooby-Doo Mystery", command: "!jogo mega scooby doo" },
+      { name: "Second Samurai", command: "!jogo mega second samurai" },
+      { name: "Sega Top Five", command: "!jogo mega sega top five" },
+      { name: "Shadow Dancer", command: "!jogo mega shadow dancer" },
+      { name: "Shadow of the Beast", command: "!jogo mega shadow beast" },
+      { name: "Shove It!", command: "!jogo mega shove it" },
+      { name: "Show do Milhao", command: "!jogo mega show do milhao" },
+      { name: "Skeleton Krew", command: "!jogo mega skeleton krew" },
+      { name: "Sonic The Hedgehog", command: "!jogo mega sonic 1" },
+      { name: "Spider-Man & Venom", command: "!jogo mega spider venom" },
+      { name: "Splatterhouse 3", command: "!jogo mega splatterhouse 3" },
+      { name: "Sport Games", command: "!jogo mega sport games" },
+      { name: "Stargate", command: "!jogo mega stargate" },
+      { name: "Story of Thor", command: "!jogo mega story of thor" },
+      { name: "Streets of Rage", command: "!jogo mega streets of rage" },
+      { name: "Strider", command: "!jogo mega strider" },
+      { name: "Super Mario Bros.", command: "!jogo mega super mario" },
+      { name: "Super Monaco GP", command: "!jogo mega super monaco" },
+      { name: "Syd of Valis", command: "!jogo mega syd valis" },
+      { name: "Tatsujin", command: "!jogo mega truxton" },
+      { name: "Taz in Escape from Mars", command: "!jogo mega taz escape" },
+      { name: "Terminator", command: "!jogo mega terminator" },
+      { name: "The Amazing Spider-Man", command: "!jogo mega amazing spiderman" },
+      { name: "Thunder Force IV", command: "!jogo mega thunder force 4" },
+      { name: "ToeJam & Earl", command: "!jogo mega toejam earl" },
+      { name: "Toki", command: "!jogo mega toki" },
+      { name: "Toy Story", command: "!jogo mega toy story" },
+      { name: "Trouble Shooter", command: "!jogo mega trouble shooter" },
+      { name: "Truxton", command: "!jogo mega truxton" },
+      { name: "Turbo OutRun", command: "!jogo mega turbo outrun" },
+      { name: "Turma da Monica", command: "!jogo mega turma da monica" },
+      { name: "Twinkle Tale", command: "!jogo mega twinkle tale" },
+      { name: "Two Crude Dudes", command: "!jogo mega two crude dudes" },
+      { name: "Valis", command: "!jogo mega valis" },
+      { name: "Vectorman", command: "!jogo mega vectorman" },
+      { name: "X-Men 2", command: "!jogo mega xmen 2" },
+      { name: "Zero the Kamikaze Squirrel", command: "!jogo mega zero kamikaze" },
+      { name: "Xeno Crisis", command: "!jogo mega xeno" }
+    ]
+  },
+  {
+    category: "Master System",
+    items: [
+      { name: "Action Fighter", command: "!jogo master action fighter" },
+      { name: "Aerial Assault", command: "!jogo master aerial assault" },
+      { name: "Astro Warrior", command: "!jogo master Astro Warrior " },
+      { name: "Air Rescue", command: "!jogo master air rescue" },
+      { name: "Aladdin", command: "!jogo master aladdin" },
+      { name: "Asterix", command: "!jogo master Asterix " },
+      { name: "Alex Kidd", command: "!jogo master alex kidd" },
+      { name: "Alien Syndrome", command: "!jogo master alien syndrome" },
+      { name: "Altered Beast", command: "!jogo master altered beast" },
+      { name: "Andre Agassi Tennis", command: "!jogo master andre agassi" },
+      { name: "Argos no Juujiken", command: "!jogo master argos" },
+      { name: "Black Belt", command: "!jogo master black belt" },
+      { name: "Blade Eagle", command: "!jogo master blade eagle" },
+      { name: "Bomber Raid", command: "!jogo master bomber raid" },
+      { name: "Bram Stoker's Dracula", command: "!jogo master bram stoker" },
+      { name: "California Games", command: "!jogo master california games" },
+      { name: "Chapolim vs Dracula", command: "!jogo master chapolim" },
+      { name: "Choplifter", command: "!jogo master choplifter" },
+      { name: "Cloud Master", command: "!jogo master cloud master" },
+      { name: "Columns", command: "!jogo master columns" },
+      { name: "Cyborg Hunter", command: "!jogo master cyborg hunter" },
+      { name: "Daffy Duck in Hollywood", command: "!jogo master daffy duck" },
+      { name: "Dragon - The Bruce Lee Story", command: "!jogo master bruce lee" },
+      { name: "Enduro Racer", command: "!jogo master enduro racer" },
+      { name: "E-SWAT", command: "!jogo master eswat" },
+      { name: "Ferias Frustradas do Pica Pau", command: "!jogo master pica pau" },
+      { name: "Flintstones", command: "!jogo master Flintstones" },
+      { name: "FIFA International Soccer", command: "!jogo master fifa" },
+      { name: "Gain Ground", command: "!jogo master gain ground" },
+      { name: "Game Box Serie Esportes Radicais", command: "!jogo master esportes radicais" },
+      { name: "Ghost House", command: "!jogo master ghost house" },
+      { name: "Golden Axe Warrior", command: "!jogo master golden axe warrior" },
+      { name: "Golvellius", command: "!jogo master golvellius" },
+      { name: "Hang-On", command: "!jogo master hang on" },
+      { name: "Hook", command: "!jogo master hook" },
+      { name: "James Bond 007 - The Duel", command: "!jogo master james bond" },
+      { name: "Jungle Book", command: "!jogo master jungle book" },
+      { name: "Kenseiden", command: "!jogo master kenseiden" },
+      { name: "Lord of the Sword", command: "!jogo master lord of the sword" },
+      { name: "Lucky Dime Caper", command: "!jogo master lucky dime caper" },
+      { name: "Magali no Castelo do Dragao", command: "!jogo master magali" },
+      { name: "Master of Darkness", command: "!jogo master master of darkness" },
+      { name: "Monica no Castelo do Dragao", command: "!jogo master monica" },
+      { name: "Mortal Kombat", command: "!jogo master mortal kombat" },
+      { name: "Ninja Gaiden", command: "!jogo master ninja gaiden" },
+      { name: "Olympic Gold", command: "!jogo master olympic gold" },
+      { name: "OutRun Europa", command: "!jogo master outrun europa" },
+      { name: "Phantasy Star", command: "!jogo master phantasy star" },
+      { name: "Psychic World", command: "!jogo master psychic world" },
+      { name: "Psycho Fox", command: "!jogo master psycho fox" },
+      { name: "R.C. Grand Prix", command: "!jogo master  grand prix" },
+      { name: "ren & stinpy", command: "!jogo master ren" },
+      { name: "Renegade", command: "!jogo master renegade" },
+      { name: "Rodrigo O Resgate", command: "!jogo master rodrigo o resgate" },
+      { name: "R-Type", command: "!jogo master r type" },
+      { name: "Rygar", command: "!jogo master rygar" },
+      { name: "Sapo Xule - O Mestre do Kung Fu", command: "!jogo master sapo xule" },
+      { name: "Sega Chess", command: "!jogo master sega chess" },
+      { name: "Shinobi", command: "!jogo master shinobi" },
+      { name: "Sitio do Picapau Amarelo", command: "!jogo master sitio do picapau" },
+      { name: "Sonic The Hedgehog", command: "!jogo master sonic" },
+      { name: "Strider", command: "!jogo master strider" },
+      { name: "Super Kick Off", command: "!jogo master super kick off" },
+      { name: "Superman", command: "!jogo master superman" },
+      { name: "Taz-Mania", command: "!jogo master taz mania" },
+      { name: "Time Soldiers", command: "!jogo master time soldiers" },
+      { name: "Tom and Jerry", command: "!jogo master tom and jerry" },
+      { name: "Treinamento Do Guerreiro Lobo", command: "!jogo master guerreiro lobo" },
+      { name: "Turma da Monica 3", command: "!jogo master turma da monica 3" },
+      { name: "TV Colosso", command: "!jogo master tv colosso" },
+      { name: "Where in the World is Carmen Sandiego", command: "!jogo master carmen sandiego" },
+      { name: "Winter Olympics", command: "!jogo master winter olympics" },
+      { name: "World Cup Italia 90", command: "!jogo master world cup italia" }
+    ]
+  },
+  {
+    category: "N64",
+    items: [
+      { name: "wave race", command: "!jogo n64 wave race" },
+      { name: "mario kart 64", command: "!jogo n64 mario kart" },
+      { name: "crushi´n usa", command: "!jogo n64 usa" },
+      { name: "mario tenis", command: "!jogo n64 mario tennis" }
+    ]
+  },
+  {
+    category: "Neo Geo",
+    items: [
+      { name: "Double Dragon", command: "!jogo neogeo doubledr" },
+      { name: "Metal Slug", command: "!jogo neogeo mslug" },
+      { name: "Aero Fighters 2", command: "!jogo neogeo sonicwi2" },
+      { name: "Super Sidekicks 3", command: "!jogo neogeo ssideki3" }
+    ]
+  }
+];
+
+let activeTab = 0;
+
+function renderTabs() {
+  const container = document.getElementById('tabsContainer');
+  container.innerHTML = database.map((cat, idx) => `
+    <button class="tab ${idx === activeTab ? 'active' : ''}" onclick="switchTab(${idx})">
+      ${cat.category}
+    </button>
+  `).join('');
+}
+
+function switchTab(idx) {
+  activeTab = idx;
+  document.getElementById('searchInput').value = '';
+  renderTabs();
+  renderGames(database[activeTab].items);
+}
+
+function renderGames(items) {
+  const listContainer = document.getElementById('gameListContainer');
+  if (items.length === 0) {
+    listContainer.innerHTML = `<div class="empty-state">Nenhum jogo encontrado 🕵️‍♂️</div>`;
+    return;
+  }
+  
+  listContainer.innerHTML = items.map((game, i) => `
+    <div class="game-card">
+      <div class="game-info">
+        <div class="game-name">${game.name}</div>
+        <div class="game-command">${game.command}</div>
+      </div>
+      <button class="copy-btn" onclick="copyCommand('${escapeHtml(game.command)}', this)">
+        📋 Copiar
+      </button>
+    </div>
+  `).join('');
+}
+
+function filterGames() {
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  if (!query) {
+    renderGames(database[activeTab].items);
+    return;
+  }
+
+  let allMatches = [];
+  database.forEach(cat => {
+    cat.items.forEach(game => {
+      if (game.name.toLowerCase().includes(query) || game.command.toLowerCase().includes(query)) {
+        allMatches.push(game);
+      }
+    });
+  });
+
+  renderGames(allMatches);
+}
+
+function copyCommand(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✅ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+}
+
+function escapeHtml(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+// Inicializar página
+renderTabs();
+renderGames(database[0].items);
+</script>
+
+</body>
+</html>
