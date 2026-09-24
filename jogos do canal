@@ -18,7 +18,6 @@
     --accent-glow: rgba(245, 158, 11, 0.25);
     --border: #1e293b;
     --success: #10b981;
-    --ml-yellow: #ffe600;
   }
   * { box-sizing: border-box; }
   body {
@@ -52,29 +51,6 @@
     color: var(--muted); font-size: 14px; line-height: 1.5;
     margin: 0 auto; max-width: 38ch;
   }
-
-  /* Bloco Las Indica Rotativo (Mercado Livre) */
-  .ad-box {
-    background: linear-gradient(135deg, #1c0f38, #2a154f);
-    border: 1px solid var(--ml-yellow);
-    border-radius: 14px; padding: 18px;
-    margin-bottom: 20px;
-    position: relative; overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    transition: opacity 0.4s ease-in-out;
-  }
-  .ad-tag {
-    background: var(--ml-yellow); color: #111; font-size: 10px;
-    font-weight: 800; padding: 2px 6px; border-radius: 4px;
-    display: inline-block; margin-bottom: 6px; text-transform: uppercase; width: fit-content;
-  }
-  .ad-name { font-weight: 700; font-size: 14.5px; color: var(--text); margin-bottom: 12px; line-height: 1.3; }
-  .ad-btn {
-    display: inline-block; background: var(--ml-yellow); color: #111;
-    padding: 8px 14px; border-radius: 8px; font-weight: 800;
-    font-size: 12px; text-decoration: none; text-align: center; transition: all 0.2s ease;
-  }
-  .ad-btn:hover { background: #ffd000; transform: translateY(-1px); }
   
   /* Search Box */
   .search-box {
@@ -179,13 +155,6 @@
     <p class="subtitle">Pesquise o seu jogo favorito, copie o comando e cole direto no chat da live!</p>
   </div>
 
-  <!-- Bloco Las Indica Rotativo (Mercado Livre) -->
-  <div class="ad-box" id="adBox">
-    <span class="ad-tag">Las Indica 🛒</span>
-    <div class="ad-name" id="adName">Controle Para Xbox 360 Com Fio Joystick Manete Gamepass Steam Tv Pc Android - R$ 46,07</div>
-    <a href="https://meli.la/2inqeW2" target="_blank" class="ad-btn" id="adBtn">Ver Oferta no Mercado Livre 🔗</a>
-  </div>
-
   <div class="search-box">
     <span class="search-icon">🔍</span>
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar jogo (ex: Mario, Contra, Sonic)..." oninput="filterGames()">
@@ -202,41 +171,7 @@
 </div>
 
 <script>
-// Lista de produtos para o banner rotativo do Mercado Livre
-const ads = [
-  {
-    name: "Controle Para Xbox 360 Com Fio Joystick Manete Gamepass Steam Tv Pc Android — R$ 46,07",
-    url: "https://meli.la/2inqeW2"
-  },
-  {
-    name: "Adaptador Videogame Game Stick M15 2 Controles Game Stick — R$ 219,90",
-    url: "https://meli.la/2kxZ49N"
-  }
-];
-
-let currentAdIndex = 0;
-
-function rotateAds() {
-  const adBox = document.getElementById('adBox');
-  const adName = document.getElementById('adName');
-  const adBtn = document.getElementById('adBtn');
-
-  // Efeito suave de transição (fade out)
-  adBox.style.opacity = 0;
-
-  setTimeout(() => {
-    currentAdIndex = (currentAdIndex + 1) % ads.length;
-    adName.textContent = ads[currentAdIndex].name;
-    adBtn.href = ads[currentAdIndex].url;
-    // Efeito suave de retorno (fade in)
-    adBox.style.opacity = 1;
-  }, 400);
-}
-
-// Trocar a propaganda a cada 7 segundos
-setInterval(rotateAds, 7000);
-
-// Dados completos extraídos rigorosamente da folha Excel original
+// Dados completos extraídos rigorosamente da folha Excel original (sem alterar nomes ou comandos)[cite: 4]
 const database = [
   {
     category: "Atari",
