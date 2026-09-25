@@ -87,7 +87,7 @@
   .ad-btn:hover { background: #ffd000; transform: translateY(-1px); }
 
   .search-box{
-    margin:20px 0 6px; position:sticky; top:12px; z-index:5;
+    margin:20px 0 10px; position:sticky; top:12px; z-index:5;
   }
   .search-box input{
     width:100%; padding:16px 18px; border-radius:12px;
@@ -97,6 +97,40 @@
   }
   .search-box input::placeholder{color:var(--muted);}
   .search-box input:focus{outline:2px solid var(--pink); outline-offset:2px;}
+
+  /* Filtro por Letras do Alfabeto */
+  .alphabet-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 10px;
+    border-radius: 12px;
+  }
+  .alpha-btn {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .alpha-btn:hover {
+    background: var(--purple);
+    color: var(--text);
+    border-color: var(--purple);
+  }
+  .alpha-btn.active {
+    background: var(--pink);
+    color: var(--bg);
+    border-color: var(--pink);
+  }
 
   .count{font-family:'Space Mono',monospace; font-size:12px; color:var(--muted); margin:14px 2px 16px;}
 
@@ -146,7 +180,7 @@
     <p class="lede">Busque pelo nome da música ou do artista, toque em <b>copiar comando</b> e cole no chat da live. 🎶</p>
   </header>
 
-  <!-- Secção Superior: Som Ambiente (sem loop) + "Las Indica" (Atari Miniatura) -->
+  <!-- Secção Superior: Som Ambiente + "Las Indica" (Atari Miniatura) -->
   <div class="top-widgets">
     <div class="widget-box">
       <div class="widget-title">🎧 SOM AMBIENTE</div>
@@ -166,34 +200,221 @@
   <div class="search-box">
     <input id="search" type="text" placeholder="Buscar música ou artista..." autocomplete="off">
   </div>
+
+  <!-- Barra de Filtro por Letra do Artista -->
+  <div class="alphabet-bar" id="alphabetBar">
+    <button class="alpha-btn active" data-letter="ALL">Todas</button>
+    <!-- As letras serão geradas automaticamente pelo script -->
+  </div>
+
   <div class="count" id="count"></div>
 
   <div class="list" id="list"></div>
   <div class="empty" id="empty" style="display:none;">Nenhuma música encontrada.</div>
 
-  <footer>139 músicas · toque em copiar e cole no chat</footer>
+  <footer id="footer-count">músicas · toque em copiar e cole no chat</footer>
 </div>
 
 <script>
-const SONGS = [{"artista": "199899 - Bruce Hornsby", "musica": "The Way It Is", "comando": "!play The Way It Is"}, {"artista": "a-ha", "musica": "Cry Wolf 2016 Remaster", "comando": "!play Cry Wolf "}, {"artista": "a-ha", "musica": "Hunting High and Low", "comando": "!play Hunting High and Low"}, {"artista": "a-ha", "musica": "Scoundrel Days", "comando": "!play Scoundrel Days"}, {"artista": "a-ha", "musica": "The Blood That Moves the Body 2015 Remaster", "comando": "!play The Blood That "}, {"artista": "a-ha", "musica": "You Are the One", "comando": "!play You Are the One"}, {"artista": "AIR SUPPLY", "musica": "I Can Wait Forever", "comando": "!play I Can Wait Forever"}, {"artista": "Barry Manilow", "musica": "Mandy", "comando": "!play Mandy"}, {"artista": "Berlin", "musica": "Take My Breath Away Love Theme from", "comando": "!play Take My Breath Away "}, {"artista": "bolshoi", "musica": "sunday", "comando": "!play sunday"}, {"artista": "Bon Jovi", "musica": "Never Say Goodbye", "comando": "!play Never Say Goodbye"}, {"artista": "bonde do tigrao", "musica": "o baile todo", "comando": "!play O Baile Todo"}, {"artista": "Bryan Adams", "musica": "Heaven", "comando": "!play Heaven"}, {"artista": "Colin Firth", "musica": "Dancing Queen", "comando": "!play Dancing Queen"}, {"artista": "coolio", "musica": "gangster paradise", "comando": "!play paradise"}, {"artista": "Cyndi Lauper", "musica": "Girls Just Want to Have Fun", "comando": "!play Girls Just Want to Have Fun"}, {"artista": "Dave Darell", "musica": "Children (Club Radio Edit)", "comando": "!play Children (Club Radio Edit)"}, {"artista": "David Garfield", "musica": "The Highways of My Life", "comando": "!play The Highways of My Life"}, {"artista": "DEBORAH BLANDO", "musica": "Innocence", "comando": "!play Innocence"}, {"artista": "Depeche Mode", "musica": " Enjoy the Silence", "comando": "!play Enjoy the Silence"}, {"artista": "Depeche Mode", "musica": "Strangelove", "comando": "!play Strangelove"}, {"artista": "Desconhecido", "musica": "thriller", "comando": "!play thriller"}, {"artista": "Desireless", "musica": "Voyage voyage", "comando": "!play Voyage voyage"}, {"artista": "DETONAUTAS", "musica": "O dia que não terminou", "comando": "!PLAY O dia que não terminou"}, {"artista": "Duran Duran", "musica": "save a prayer", "comando": "!play save"}, {"artista": "Duran Duran", "musica": "Come Undone", "comando": "!play Come Undone"}, {"artista": "Erasure", "musica": "A Little Respect", "comando": "!play A Little Respect"}, {"artista": "Eurythmics", "musica": "Sweet Dreams Are Made of This 2005 Remaster", "comando": "!play Sweet Dreams "}, {"artista": "Eurythmics", "musica": "There Must Be an Angel Playing with My Heart", "comando": "!play There Must "}, {"artista": "F.R. David", "musica": "Words Original Version 1983", "comando": "!play Words "}, {"artista": "Faith No More", "musica": "Epic", "comando": "!play Epic"}, {"artista": "Fine Young Cannibals", "musica": "She Drives Me Crazy", "comando": "!play She Drives Me Crazy"}, {"artista": "Gino Vannelli", "musica": "Living Inside Myself Live In LA", "comando": "!play Living Inside Myself"}, {"artista": "Guilherme Arantes", "musica": "Cheia de Charme Ao Vivo", "comando": "!play Cheia de Charme "}, {"artista": "ICEHOUSE", "musica": "No Promises", "comando": "!play No Promises"}, {"artista": "Irene Cara", "musica": "What A Feeling", "comando": "!play What A Feeling"}, {"artista": "JOANA", "musica": "TO FAZENDO FALTA", "comando": "!play Tô Fazendo Falta"}, {"artista": "Kate Bush", "musica": "Wuthering Heights", "comando": "!play Wuthering Heights"}, {"artista": "Kid Abelha", "musica": "Como eu quero", "comando": "!play Como eu quero"}, {"artista": "Kool The Gang", "musica": "Cherish", "comando": "!play Cherish"}, {"artista": "Legiao Urbana", "musica": "Angra Dos Reis", "comando": "!play Angra Dos Reis"}, {"artista": "Legiao Urbana", "musica": "Eduardo E Mnica", "comando": "!play Eduardo "}, {"artista": "Legiao Urbana", "musica": "Giz", "comando": "!play Giz"}, {"artista": "Legiao Urbana", "musica": "Monte Castelo", "comando": "!play Monte Castelo"}, {"artista": "Legiao Urbana", "musica": "O Mundo Anda To Complicado", "comando": "!play O Mundo "}, {"artista": "Legiao Urbana", "musica": "Pais E Filhos", "comando": "!play Pais E Filhos"}, {"artista": "Legiao Urbana", "musica": "Por Enquanto", "comando": "!play Por Enquanto"}, {"artista": "Legiao Urbana", "musica": "Ser", "comando": "!play Ser"}, {"artista": "Legiao Urbana", "musica": "Tempo Perdido", "comando": "!play Tempo Perdido"}, {"artista": "Legiao Urbana", "musica": "Vento No Litoral", "comando": "!play Vento No Litoral"}, {"artista": "Legiao Urbana", "musica": "ndios", "comando": "!play ndios"}, {"artista": "Linear", "musica": "Sending All My Love", "comando": "!play Sending All My Love"}, {"artista": "Lionel Richie", "musica": "Hello", "comando": "!play Hello"}, {"artista": "Lulu Santos", "musica": "A Cura", "comando": "!play A Cura"}, {"artista": "Lulu Santos", "musica": "Astronauta Album Version", "comando": "!play Astronauta "}, {"artista": "Lulu Santos", "musica": "Casa", "comando": "!play Casa"}, {"artista": "Lulu Santos", "musica": "Tempos modernos Remasterizado em 2001", "comando": "!play Tempos modernos "}, {"artista": "Lulu Santos", "musica": "Toda Forma de Amor", "comando": "!play Toda Forma de Amor"}, {"artista": "Lulu Santos", "musica": "Um pro Outro", "comando": "!play Um pro Outro"}, {"artista": "Madonna", "musica": "Holiday", "comando": "!play Holiday"}, {"artista": "Madonna", "musica": "Don't Preach", "comando": "!play Don't Preach"}, {"artista": "Madonna", "musica": " Take a Bow", "comando": "!play  Take a Bow"}, {"artista": "Madonna", "musica": "Material Girl ", "comando": "!play Material Girl"}, {"artista": "Madonna", "musica": "La Isla Bonita Extended Remix", "comando": "!play La Isla Bonita "}, {"artista": "Madonna", "musica": "Live to Tell", "comando": "!play Live to Tell"}, {"artista": "Matway", "musica": "Walking Away Infinity", "comando": "!play Walking Away "}, {"artista": "Metallica", "musica": "The Unforgiven", "comando": "!play The Unforgiven"}, {"artista": "Miami Sound Machine", "musica": "bad boy", "comando": "!play bad"}, {"artista": "Michael Jackson", "musica": "Earth Song", "comando": "!play Earth Song"}, {"artista": "Michael Jackson", "musica": "Stranger in Moscow", "comando": "!play Stranger in Moscow"}, {"artista": "Michael Sembello", "musica": "Maniac", "comando": "!play Maniac"}, {"artista": "n trace", "musica": "stayin a live", "comando": "!play stayin"}, {"artista": "Nelly Furtado", "musica": "Promiscuous", "comando": "!play Promiscuous"}, {"artista": "NIRVANA", "musica": "Smells Like Teen ", "comando": "!play  Smells Like Teen "}, {"artista": "oingo boingo", "musica": "stay", "comando": "!play stay"}, {"artista": "Patrick Hernandez", "musica": "Born to Be Alive The Original", "comando": "!play Born "}, {"artista": "Pet Shop Boys", "musica": "Always on My Mind 2003 Remaster", "comando": "!play Always "}, {"artista": "Pet Shop Boys", "musica": "Domino Dancing 2018 Remaster", "comando": "!play Domino "}, {"artista": "Pet Shop Boys", "musica": "West End Girls 2018 Remaster", "comando": "!play West "}, {"artista": "Phenomena", "musica": "dont cry tonight", "comando": "!play tonight"}, {"artista": "Phenomena", "musica": "Did It All for Love 12", "comando": "!play Did It All"}, {"artista": "Phil Collins", "musica": "I Wish It Would Rain Down 2016 Remaster", "comando": "!play I Wish It Would "}, {"artista": "Phil Collins", "musica": "Two Hearts 2016 Remaster", "comando": "!play Two Hearts "}, {"artista": "Pink Floyd", "musica": "High Hopes Live", "comando": "!play High Hopes "}, {"artista": "Propaganda", "musica": "Duel Bittersweet", "comando": "!play Duel "}, {"artista": "Remix ", "musica": "Losing My Religion", "comando": "!play  Losing My Religion"}, {"artista": "Remix Kingz", "musica": "Ghostbusters 808 Remix", "comando": "!play Ghostbusters "}, {"artista": "Rick James", "musica": "Super Freak", "comando": "!play Super Freak"}, {"artista": "Robert Miles", "musica": "Children Dream Version", "comando": "!play Children "}, {"artista": "ROBERTA MIRANDA", "musica": " Faz Amor Comigo", "comando": "!play Faz Amor Comigo"}, {"artista": "Roupa Nova", "musica": "Coração Pirata", "comando": "!play Coração Pirata"}, {"artista": "Roupa Nova", "musica": "Whisky à Go-Go", "comando": "!play Whisky à Go-Go"}, {"artista": "Roupa Nova", "musica": "agora sim", "comando": "!play agora sim"}, {"artista": "Roupa Nova", "musica": "a viajem", "comando": " A Viagem"}, {"artista": "Roupa Nova", "musica": "a força do amor", "comando": "!play a força do amor"}, {"artista": "Roupa Nova", "musica": "meu universo e voce", "comando": "!play meu universo"}, {"artista": "ROUPA NOVA", "musica": "TREM AZUL", "comando": "!play trem azul"}, {"artista": "Roupa Nova", "musica": "coracao pirata", "comando": "!play Coração Pirata"}, {"artista": "Roupa Nova", "musica": "deixa o amor acontecer", "comando": "!play deixa o amor acontecer"}, {"artista": "Roupa Nova", "musica": "Dona Ao Vivo", "comando": "!play Dona "}, {"artista": "Roupa Nova", "musica": "Sapato Velho Ao Vivo", "comando": "!play Sapato Velho "}, {"artista": "ROXETTE", "musica": "Joyride", "comando": "!play Joyride\n"}, {"artista": "ROXETTE", "musica": "The Look", "comando": "!play The Look\n"}, {"artista": "Roy Orbison", "musica": "You Got It", "comando": "!play You Got It"}, {"artista": "RPM", "musica": "Olhar 43", "comando": "!play Olhar 43"}, {"artista": "Sandra", "musica": "Maria Magdalena Remastered 1992", "comando": "!play Maria Magdalena "}, {"artista": "Simon Garfunkel", "musica": "Bridge Over Troubled Water", "comando": "!play Bridge Over Troubled Water"}, {"artista": "Sinad OConnor", "musica": "Nothing Compares 2 U", "comando": "!play Nothing Compares 2 U"}, {"artista": "Snap", "musica": "Rhythm Is a Dancer", "comando": "!play Rhythm Is a Dancer"}, {"artista": "Spandau Ballet", "musica": "True Live at Live Aid Wembley Stadium 13th July 1985", "comando": "!play True "}, {"artista": "spc", "musica": "Sai da Minha Aba", "comando": "!play Sai da Minha Aba"}, {"artista": "spc", "musica": "Quando é Amor", "comando": "!play Quando é Amor"}, {"artista": "spc", "musica": "Minha Metade/", "comando": "!play Minha Metade"}, {"artista": "spc", "musica": "Nosso Sonho Não é Ilusão", "comando": "!play Nosso Sonho Não é Ilusão"}, {"artista": "spc", "musica": "te amar sem medo", "comando": "!play te amar sem medo"}, {"artista": "spc", "musica": "Tá Por Fora", "comando": "!play Tá Por Fora"}, {"artista": "spc", "musica": "A Barata", "comando": "!play A Barata"}, {"artista": "spc", "musica": "Te Amar Sem Medo", "comando": "!play Te Amar Sem Medo"}, {"artista": "spc", "musica": "Que Se Chama Amor", "comando": "!play Que Se Chama Amor"}, {"artista": "SUPER TRAMP", "musica": "Soapbox Opera", "comando": "!play Soapbox Opera"}, {"artista": "SUPER TRAMP", "musica": "The Logical ", "comando": "!play The Logical "}, {"artista": "SUPER TRAMP", "musica": "Take The Long Way Home", "comando": "!play way home"}, {"artista": "Survivor", "musica": "Eye of the Tiger", "comando": "!play Eye of the Tiger"}, {"artista": "TALK TALK", "musica": "It's My Life", "comando": "!PLAY MY LIFE"}, {"artista": "Tears For Fears", "musica": "Everybody Wants To Rule The World", "comando": "!play Everybody Wants To Rule The World"}, {"artista": "Tears For Fears", "musica": "Sowing The Seeds Of Love Alternate Mix", "comando": "!play Sowing The Seeds "}, {"artista": "Território Negro", "musica": "Aquele Abraço", "comando": "!play aquele abraço"}, {"artista": "The Alan Parsons Project", "musica": "Time", "comando": "!play Time"}, {"artista": "The Beatles", "musica": "Twist And Shout Remastered 2009", "comando": "!play Twist And Shout "}, {"artista": "The Beatles", "musica": "What Have I Done to Deserve This with Dusty Springfield 2018 Remaster", "comando": "!play What Have I Done to Deserve "}, {"artista": "The Cranberries", "musica": "Dreams", "comando": "!play Dreams\n"}, {"artista": "The Cranberries", "musica": "So Cold In Ireland", "comando": " !play So Cold In Ireland"}, {"artista": "The Cranberries", "musica": " Linger", "comando": "!play Linger"}, {"artista": "The Housemartins", "musica": "Build", "comando": "!play Build"}, {"artista": "The Human League", "musica": "Human Remastered 2003", "comando": "!play Human "}, {"artista": "The Outfield", "musica": "Your Love", "comando": "!play Your Love"}, {"artista": "The Verve", "musica": "Bitter Sweet Symphony Extended Version", "comando": "!play Bitter Sweet Symphony "}, {"artista": "Tim Moore", "musica": "Yes", "comando": "!play Yes"}, {"artista": "Yahoo", "musica": "Mordida De Amor", "comando": "!play Mordida De Amor"}]
-;
+const SONGS = [
+  {"artista": "199899 - Bruce Hornsby", "musica": "The Way It Is", "comando": "!play The Way It Is"},
+  {"artista": "a-ha", "musica": "Cry Wolf 2016 Remaster", "comando": "!play Cry Wolf "},
+  {"artista": "a-ha", "musica": "Hunting High and Low", "comando": "!play Hunting High and Low"},
+  {"artista": "a-ha", "musica": "Scoundrel Days", "comando": "!play Scoundrel Days"},
+  {"artista": "a-ha", "musica": "The Blood That Moves the Body 2015 Remaster", "comando": "!play The Blood That "},
+  {"artista": "a-ha", "musica": "You Are the One", "comando": "!play You Are the One"},
+  {"artista": "Aerosmith", "musica": "I Don't Want To Miss A Thing", "comando": "!play I Don't Want To Miss"},
+  {"artista": "AIR SUPPLY", "musica": "I Can Wait Forever", "comando": "!play I Can Wait Forever"},
+  {"artista": "Alicia Keys", "musica": "You Don't Know My Name", "comando": "!play You Don't Know"},
+  {"artista": "Barry Manilow", "musica": "Mandy", "comando": "!play Mandy"},
+  {"artista": "Bee Gees", "musica": "Wish You Were Here", "comando": "!play Wish You Were Here"},
+  {"artista": "Berlin", "musica": "Take My Breath Away Love Theme from", "comando": "!play Take My Breath Away "},
+  {"artista": "bolshoi", "musica": "sunday", "comando": "!play sunday"},
+  {"artista": "Bon Jovi", "musica": "Bed Of Roses", "comando": "!play Bed Of Roses"},
+  {"artista": "Bon Jovi", "musica": "Never Say Goodbye", "comando": "!play Never Say Goodbye"},
+  {"artista": "bonde do tigrao", "musica": "o baile todo", "comando": "!play O Baile Todo"},
+  {"artista": "Bryan Adams", "musica": "Heaven", "comando": "!play Heaven"},
+  {"artista": "Colin Firth", "musica": "Dancing Queen", "comando": "!play Dancing Queen"},
+  {"artista": "coolio", "musica": "gangster paradise", "comando": "!play paradise"},
+  {"artista": "Cyndi Lauper", "musica": "Girls Just Want to Have Fun", "comando": "!play Girls Just Want"},
+  {"artista": "Cyndi Lauper", "musica": "Time After Time", "comando": "!play Time After"},
+  {"artista": "Cyndi Lauper", "musica": "True Colors", "comando": "!play True Colors"},
+  {"artista": "Dave Darell", "musica": "Children (Club Radio Edit)", "comando": "!play Children (Club Radio Edit)"},
+  {"artista": "David Garfield", "musica": "The Highways of My Life", "comando": "!play The Highways of My Life"},
+  {"artista": "DEBORAH BLANDO", "musica": "Innocence", "comando": "!play Innocence"},
+  {"artista": "Depeche Mode", "musica": " Enjoy the Silence", "comando": "!play Enjoy the Silence"},
+  {"artista": "Depeche Mode", "musica": "Strangelove", "comando": "!play Strangelove"},
+  {"artista": "Desconhecido", "musica": "thriller", "comando": "!play thriller"},
+  {"artista": "Desireless", "musica": "Voyage voyage", "comando": "!play Voyage voyage"},
+  {"artista": "DETONAUTAS", "musica": "O dia que não terminou", "comando": "!PLAY O dia que não terminou"},
+  {"artista": "Dionne Warwick", "musica": "That's What Friends Are For", "comando": "!play That's What Friends Are For"},
+  {"artista": "Duran Duran", "musica": "save a prayer", "comando": "!play save"},
+  {"artista": "Duran Duran", "musica": "Come Undone", "comando": "!play Come Undone"},
+  {"artista": "Ed Sheeran", "musica": "Perfect", "comando": "!play Perfect"},
+  {"artista": "Elton John", "musica": "Believe", "comando": "!play Believe"},
+  {"artista": "Elton John", "musica": "Don't Go Breaking My Heart", "comando": "!play Don't Go Breaking"},
+  {"artista": "Elton John", "musica": "Goodbye Yellow Brick Road", "comando": "!play Goodbye Yellow"},
+  {"artista": "Elton John", "musica": "Hold Me Closer", "comando": "!play Hold Me Closer"},
+  {"artista": "Elton John", "musica": "I'm Still Standing", "comando": "!play I'm Still Standing"},
+  {"artista": "Elton John", "musica": "Nikita", "comando": "!play Nikita"},
+  {"artista": "Elton John", "musica": "Sorry Seems To Be The Hardest Word", "comando": "!play Sorry Seems To Be"},
+  {"artista": "Elton John", "musica": "Your Song", "comando": "!play Your Song"},
+  {"artista": "Erasure", "musica": "A Little Respect", "comando": "!play A Little Respect"},
+  {"artista": "Eurythmics", "musica": "Sweet Dreams Are Made of This 2005 Remaster", "comando": "!play Sweet Dreams "},
+  {"artista": "Eurythmics", "musica": "There Must Be an Angel Playing with My Heart", "comando": "!play There Must "},
+  {"artista": "F.R. David", "musica": "Words Original Version 1983", "comando": "!play Words "},
+  {"artista": "Faith No More", "musica": "Epic", "comando": "!play Epic"},
+  {"artista": "Fine Young Cannibals", "musica": "She Drives Me Crazy", "comando": "!play She Drives Me Crazy"},
+  {"artista": "George Michael", "musica": "Careless Whisper", "comando": "!play Careless Whisper"},
+  {"artista": "George Michael", "musica": "Don't Let the Sun Go Down on Me", "comando": "!play Don't Let the Sun"},
+  {"artista": "George Michael", "musica": "Father Figure", "comando": "!play Father Figure"},
+  {"artista": "George Michael", "musica": "Freedom", "comando": "!play Freedom"},
+  {"artista": "George Michael", "musica": "One More Try", "comando": "!play One More Try"},
+  {"artista": "Gino Vannelli", "musica": "Living Inside Myself Live In LA", "comando": "!play Living Inside Myself"},
+  {"artista": "Guilherme Arantes", "musica": "Cheia de Charme Ao Vivo", "comando": "!play Cheia de Charme "},
+  {"artista": "Guns N' Roses", "musica": "November Rain", "comando": "!play November Rain"},
+  {"artista": "Guns N' Roses", "musica": "Sweet Child O' Mine", "comando": "!play Sweet Child O' Mine"},
+  {"artista": "ICEHOUSE", "musica": "No Promises", "comando": "!play No Promises"},
+  {"artista": "Irene Cara", "musica": "What A Feeling", "comando": "!play What A Feeling"},
+  {"artista": "JOANA", "musica": "TO FAZENDO FALTA", "comando": "!play Tô Fazendo Falta"},
+  {"artista": "Kate Bush", "musica": "Wuthering Heights", "comando": "!play Wuthering Heights"},
+  {"artista": "Kid Abelha", "musica": "Como eu quero", "comando": "!play Como eu quero"},
+  {"artista": "Kool The Gang", "musica": "Cherish", "comando": "!play Cherish"},
+  {"artista": "Legiao Urbana", "musica": "Angra Dos Reis", "comando": "!play Angra Dos Reis"},
+  {"artista": "Legiao Urbana", "musica": "Eduardo E Mnica", "comando": "!play Eduardo "},
+  {"artista": "Legiao Urbana", "musica": "Giz", "comando": "!play Giz"},
+  {"artista": "Legiao Urbana", "musica": "Monte Castelo", "comando": "!play Monte Castelo"},
+  {"artista": "Legiao Urbana", "musica": "O Mundo Anda To Complicado", "comando": "!play O Mundo "},
+  {"artista": "Legiao Urbana", "musica": "Pais E Filhos", "comando": "!play Pais E Filhos"},
+  {"artista": "Legiao Urbana", "musica": "Por Enquanto", "comando": "!play Por Enquanto"},
+  {"artista": "Legiao Urbana", "musica": "Ser", "comando": "!play Ser"},
+  {"artista": "Legiao Urbana", "musica": "Tempo Perdido", "comando": "!play Tempo Perdido"},
+  {"artista": "Legiao Urbana", "musica": "Vento No Litoral", "comando": "!play Vento No Litoral"},
+  {"artista": "Legiao Urbana", "musica": "ndios", "comando": "!play ndios"},
+  {"artista": "Linear", "musica": "Sending All My Love", "comando": "!play Sending All My Love"},
+  {"artista": "Lionel Richie", "musica": "Hello", "comando": "!play Hello"},
+  {"artista": "Lulu Santos", "musica": "A Cura", "comando": "!play A Cura"},
+  {"artista": "Lulu Santos", "musica": "Astronauta Album Version", "comando": "!play Astronauta "},
+  {"artista": "Lulu Santos", "musica": "Casa", "comando": "!play Casa"},
+  {"artista": "Lulu Santos", "musica": "Tempos modernos Remasterizado em 2001", "comando": "!play Tempos modernos "},
+  {"artista": "Lulu Santos", "musica": "Toda Forma de Amor", "comando": "!play Toda Forma de Amor"},
+  {"artista": "Lulu Santos", "musica": "Um pro Outro", "comando": "!play Um pro Outro"},
+  {"artista": "Madonna", "musica": "Holiday", "comando": "!play Holiday"},
+  {"artista": "Madonna", "musica": "Don't Preach", "comando": "!play Don't Preach"},
+  {"artista": "Madonna", "musica": " Take a Bow", "comando": "!play  Take a Bow"},
+  {"artista": "Madonna", "musica": "Material Girl ", "comando": "!play Material Girl"},
+  {"artista": "Madonna", "musica": "La Isla Bonita Extended Remix", "comando": "!play La Isla Bonita "},
+  {"artista": "Madonna", "musica": "Live to Tell", "comando": "!play Live to Tell"},
+  {"artista": "Matway", "musica": "Walking Away Infinity", "comando": "!play Walking Away "},
+  {"artista": "Metallica", "musica": "The Unforgiven", "comando": "!play The Unforgiven"},
+  {"artista": "Miami Sound Machine", "musica": "bad boy", "comando": "!play bad"},
+  {"artista": "Michael Jackson", "musica": "Earth Song", "comando": "!play Earth Song"},
+  {"artista": "Michael Jackson", "musica": "Stranger in Moscow", "comando": "!play Stranger in Moscow"},
+  {"artista": "Michael Sembello", "musica": "Maniac", "comando": "!play Maniac"},
+  {"artista": "n trace", "musica": "stayin a live", "comando": "!play stayin"},
+  {"artista": "Nelly Furtado", "musica": "Promiscuous", "comando": "!play Promiscuous"},
+  {"artista": "NIRVANA", "musica": "Smells Like Teen ", "comando": "!play  Smells Like Teen "},
+  {"artista": "oingo boingo", "musica": "stay", "comando": "!play stay"},
+  {"artista": "Patrick Hernandez", "musica": "Born to Be Alive The Original", "comando": "!play Born "},
+  {"artista": "Pet Shop Boys", "musica": "Always on My Mind 2003 Remaster", "comando": "!play Always "},
+  {"artista": "Pet Shop Boys", "musica": "Domino Dancing 2018 Remaster", "comando": "!play Domino "},
+  {"artista": "Pet Shop Boys", "musica": "West End Girls 2018 Remaster", "comando": "!play West "},
+  {"artista": "Phenomena", "musica": "dont cry tonight", "comando": "!play tonight"},
+  {"artista": "Phenomena", "musica": "Did It All for Love 12", "comando": "!play Did It All"},
+  {"artista": "Phil Collins", "musica": "I Wish It Would Rain Down 2016 Remaster", "comando": "!play I Wish It Would "},
+  {"artista": "Phil Collins", "musica": "Two Hearts 2016 Remaster", "comando": "!play Two Hearts "},
+  {"artista": "Pink Floyd", "musica": "High Hopes Live", "comando": "!play High Hopes "},
+  {"artista": "Propaganda", "musica": "Duel Bittersweet", "comando": "!play Duel "},
+  {"artista": "Remix ", "musica": "Losing My Religion", "comando": "!play  Losing My Religion"},
+  {"artista": "Remix Kingz", "musica": "Ghostbusters 808 Remix", "comando": "!play Ghostbusters "},
+  {"artista": "Rick James", "musica": "Super Freak", "comando": "!play Super Freak"},
+  {"artista": "Robert Miles", "musica": "Children Dream Version", "comando": "!play Children "},
+  {"artista": "ROBERTA MIRANDA", "musica": " Faz Amor Comigo", "comando": "!play Faz Amor Comigo"},
+  {"artista": "Roupa Nova", "musica": "Coração Pirata", "comando": "!play Coração Pirata"},
+  {"artista": "Roupa Nova", "musica": "Whisky à Go-Go", "comando": "!play Whisky à Go-Go"},
+  {"artista": "Roupa Nova", "musica": "agora sim", "comando": "!play agora sim"},
+  {"artista": "Roupa Nova", "musica": "a viajem", "comando": " A Viagem"},
+  {"artista": "Roupa Nova", "musica": "a força do amor", "comando": "!play a força do amor"},
+  {"artista": "Roupa Nova", "musica": "meu universo e voce", "comando": "!play meu universo"},
+  {"artista": "ROUPA NOVA", "musica": "TREM AZUL", "comando": "!play trem azul"},
+  {"artista": "Roupa Nova", "musica": "coracao pirata", "comando": "!play Coração Pirata"},
+  {"artista": "Roupa Nova", "musica": "deixa o amor acontecer", "comando": "!play deixa o amor acontecer"},
+  {"artista": "Roupa Nova", "musica": "Dona Ao Vivo", "comando": "!play Dona "},
+  {"artista": "Roupa Nova", "musica": "Sapato Velho Ao Vivo", "comando": "!play Sapato Velho "},
+  {"artista": "ROXETTE", "musica": "Joyride", "comando": "!play Joyride\n"},
+  {"artista": "ROXETTE", "musica": "The Look", "comando": "!play The Look\n"},
+  {"artista": "Roy Orbison", "musica": "You Got It", "comando": "!play You Got It"},
+  {"artista": "RPM", "musica": "Olhar 43", "comando": "!play Olhar 43"},
+  {"artista": "Sandra", "musica": "Maria Magdalena Remastered 1992", "comando": "!play Maria Magdalena "},
+  {"artista": "Simon Garfunkel", "musica": "Bridge Over Troubled Water", "comando": "!play Bridge Over Troubled Water"},
+  {"artista": "Sinad OConnor", "musica": "Nothing Compares 2 U", "comando": "!play Nothing Compares 2 U"},
+  {"artista": "Snap", "musica": "Rhythm Is a Dancer", "comando": "!play Rhythm Is a Dancer"},
+  {"artista": "Spandau Ballet", "musica": "True Live at Live Aid Wembley Stadium 13th July 1985", "comando": "!play True "},
+  {"artista": "spc", "musica": "Sai da Minha Aba", "comando": "!play Sai da Minha Aba"},
+  {"artista": "spc", "musica": "Quando é Amor", "comando": "!play Quando é Amor"},
+  {"artista": "spc", "musica": "Minha Metade/", "comando": "!play Minha Metade"},
+  {"artista": "spc", "musica": "Nosso Sonho Não é Ilusão", "comando": "!play Nosso Sonho Não é Ilusão"},
+  {"artista": "spc", "musica": "te amar sem medo", "comando": "!play te amar sem medo"},
+  {"artista": "spc", "musica": "Tá Por Fora", "comando": "!play Tá Por Fora"},
+  {"artista": "spc", "musica": "A Barata", "comando": "!play A Barata"},
+  {"artista": "spc", "musica": "Te Amar Sem Medo", "comando": "!play Te Amar Sem Medo"},
+  {"artista": "spc", "musica": "Que Se Chama Amor", "comando": "!play Que Se Chama Amor"},
+  {"artista": "SUPER TRAMP", "musica": "Soapbox Opera", "comando": "!play Soapbox Opera"},
+  {"artista": "SUPER TRAMP", "musica": "The Logical ", "comando": "!play The Logical "},
+  {"artista": "SUPER TRAMP", "musica": "Take The Long Way Home", "comando": "!play way home"},
+  {"artista": "Survivor", "musica": "Eye of the Tiger", "comando": "!play Eye of the Tiger"},
+  {"artista": "TALK TALK", "musica": "It's My Life", "comando": "!PLAY MY LIFE"},
+  {"artista": "Tears For Fears", "musica": "Everybody Wants To Rule The World", "comando": "!play Everybody Wants To Rule The World"},
+  {"artista": "Tears For Fears", "musica": "Sowing The Seeds Of Love Alternate Mix", "comando": "!play Sowing The Seeds "},
+  {"artista": "Território Negro", "musica": "Aquele Abraço", "comando": "!play aquele abraço"},
+  {"artista": "The Alan Parsons Project", "musica": "Time", "comando": "!play Time"},
+  {"artista": "The Beatles", "musica": "Twist And Shout Remastered 2009", "comando": "!play Twist And Shout "},
+  {"artista": "The Beatles", "musica": "What Have I Done to Deserve This with Dusty Springfield 2018 Remaster", "comando": "!play What Have I Done to Deserve "},
+  {"artista": "The Cranberries", "musica": "Dreams", "comando": "!play Dreams\n"},
+  {"artista": "The Cranberries", "musica": "So Cold In Ireland", "comando": " !play So Cold In Ireland"},
+  {"artista": "The Cranberries", "musica": " Linger", "comando": "!play Linger"},
+  {"artista": "The Housemartins", "musica": "Build", "comando": "!play Build"},
+  {"artista": "The Human League", "musica": "Human Remastered 2003", "comando": "!play Human "},
+  {"artista": "The Outfield", "musica": "Your Love", "comando": "!play Your Love"},
+  {"artista": "The Verve", "musica": "Bitter Sweet Symphony Extended Version", "comando": "!play Bitter Sweet Symphony "},
+  {"artista": "Tim Moore", "musica": "Yes", "comando": "!play Yes"},
+  {"artista": "Yahoo", "musica": "Mordida De Amor", "comando": "!play Mordida De Amor"}
+];
 
 const listEl = document.getElementById('list');
 const searchEl = document.getElementById('search');
 const countEl = document.getElementById('count');
 const emptyEl = document.getElementById('empty');
+const footerCountEl = document.getElementById('footer-count');
+const alphabetBar = document.getElementById('alphabetBar');
+
+let currentLetter = 'ALL';
+
+// Gerar botões do alfabeto dinamicamente
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+alphabet.forEach(letter => {
+  const btn = document.createElement('button');
+  btn.className = 'alpha-btn';
+  btn.textContent = letter;
+  btn.setAttribute('data-letter', letter);
+  alphabetBar.appendChild(btn);
+});
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-function render(filter){
-  const q = filter.trim().toLowerCase();
-  const filtered = q
-    ? SONGS.filter(s => s.musica.toLowerCase().includes(q) || s.artista.toLowerCase().includes(q))
-    : SONGS;
+function render(){
+  const q = searchEl.value.trim().toLowerCase();
+  
+  const filtered = SONGS.filter(s => {
+    const matchesSearch = q === '' || s.musica.toLowerCase().includes(q) || s.artista.toLowerCase().includes(q);
+    const matchesLetter = currentLetter === 'ALL' || s.artista.trim().toUpperCase().startsWith(currentLetter);
+    return matchesSearch && matchesLetter;
+  });
 
   countEl.textContent = filtered.length + (filtered.length === 1 ? ' música' : ' músicas');
+  footerCountEl.textContent = SONGS.length + ' músicas · toque em copiar e cole no chat';
   listEl.innerHTML = '';
   emptyEl.style.display = filtered.length ? 'none' : 'block';
 
@@ -236,8 +457,18 @@ function render(filter){
   });
 }
 
-searchEl.addEventListener('input', () => render(searchEl.value));
-render('');
+searchEl.addEventListener('input', () => render());
+
+alphabetBar.addEventListener('click', (e) => {
+  if(e.target.classList.contains('alpha-btn')){
+    alphabetBar.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    currentLetter = e.target.getAttribute('data-letter');
+    render();
+  }
+});
+
+render();
 </script>
 
 </body>
