@@ -26,9 +26,9 @@ function atendenteAleatorio() {
   return NENHENS_ATENDENTES[Math.floor(Math.random() * NENHENS_ATENDENTES.length)];
 }
 
-// Cooldown simples em memória por IP
+// Cooldown ajustado para 6 segundos (tempo ideal para respirar sem travar a live)
 const ultimoPedidoPorIp = new Map();
-const COOLDOWN_MS = 5000;
+const COOLDOWN_MS = 6000;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
   const agora = Date.now();
   const ultimo = ultimoPedidoPorIp.get(ip) || 0;
   if (agora - ultimo < COOLDOWN_MS) {
-    return res.status(429).json({ reply: `${atendenteAleatorio()} Quer floodar o chat, seu retardado? Espera o cooldown! Dita !play ou !sugestao direito.` });
+    return res.status(429).json({ reply: `${atendenteAleatorio()} Quer floodar o chat, seu retardado? Espera o cooldown de 6 segundos! Digita !play ou !sugestao direito.` });
   }
   ultimoPedidoPorIp.set(ip, agora);
 
@@ -91,7 +91,6 @@ export default async function handler(req, res) {
     const dados = await respostaGroq.json();
     const resposta = dados?.choices?.[0]?.message?.content?.trim();
 
-    // Se por acaso a IA devolver vazio, usa uma resposta dinâmica em vez de estática
     if (!resposta) {
       return res.status(200).json({ 
         reply: `${atendenteAleatorio()} O cérebro derreteu aqui com a tua pergunta idiota. Procura a música na lista do site e manda !play ou !sugestao no chat!` 
