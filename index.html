@@ -172,7 +172,7 @@
   .empty{color:var(--muted); text-align:center; padding:40px 0; font-size:14px;}
   .empty small{display:block; margin-top:6px; color:var(--muted); opacity:0.8;}
 
-  footer{margin-top:40px; color:var(--muted); font-size:12.5px; text-align:center; border-top:1px solid var(--line); padding-top:18px;}
+  .row-footer{margin-top:40px; color:var(--muted); font-size:12.5px; text-align:center; border-top:1px solid var(--line); padding-top:18px;}
 
   :focus-visible{outline:2px solid var(--pink); outline-offset:2px;}
 </style>
@@ -224,7 +224,7 @@
     <small>Tente digitar só uma parte do nome, sem acento.</small>
   </div>
 
-  <footer id="footer-count">músicas · toque em copiar e cole no chat</footer>
+  <footer class="row-footer" id="footer-count">músicas · toque em copiar e cole no chat</footer>
 </div>
 
 <script>
@@ -543,6 +543,120 @@ alphabetBar.addEventListener('click', (e) => {
 });
 
 render();
+</script>
+
+<!--
+  WIDGET DO SAC IGNORANTE
+  Cole este bloco inteiro dentro do <body> do seu site (ex: no final,
+  antes de fechar </body>). Ele já vem com estilo próprio, então não deve
+  bagunçar o CSS existente do resto da página.
+
+  Ele chama /api/chat, que precisa estar publicado no MESMO domínio da
+  Vercel (por isso funciona sem configurar CORS).
+-->
+<div id="sac-widget">
+  <button id="sac-toggle" type="button" aria-label="Abrir chat SAC Ignorante">💬 SAC</button>
+
+  <div id="sac-box" hidden>
+    <div id="sac-header">
+      <span>🎤 SAC Ignorante</span>
+      <button id="sac-close" type="button" aria-label="Fechar">✕</button>
+    </div>
+    <div id="sac-messages"></div>
+    <form id="sac-form">
+      <input id="sac-input" type="text" placeholder="Manda sua dúvida..." maxlength="300" autocomplete="off">
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+</div>
+
+<style>
+  #sac-widget{ position:fixed; right:16px; bottom:16px; z-index:9999; font-family:sans-serif; }
+  #sac-toggle{
+    background:#ff3fa4; color:#150a28; border:none; border-radius:999px;
+    padding:12px 18px; font-weight:700; font-size:14px; cursor:pointer;
+    box-shadow:0 8px 24px -8px rgba(0,0,0,0.5);
+  }
+  #sac-box{
+    position:absolute; right:0; bottom:56px; width:300px; max-width:88vw;
+    background:#1c0f38; border:1px solid rgba(243,237,255,0.15); border-radius:14px;
+    display:flex; flex-direction:column; overflow:hidden;
+    box-shadow:0 20px 50px -12px rgba(0,0,0,0.6);
+  }
+  #sac-header{
+    display:flex; justify-content:space-between; align-items:center;
+    background:#26123f; color:#f3edff; padding:10px 12px; font-weight:700; font-size:13px;
+  }
+  #sac-header button{ background:none; border:none; color:#b8a9dd; cursor:pointer; font-size:14px; }
+  #sac-messages{
+    flex:1; max-height:260px; overflow-y:auto; padding:10px 12px;
+    display:flex; flex-direction:column; gap:8px; font-size:13px;
+  }
+  .sac-msg{ padding:8px 10px; border-radius:10px; max-width:85%; line-height:1.35; }
+  .sac-msg.user{ align-self:flex-end; background:#ff3fa4; color:#150a28; }
+  .sac-msg.bot{ align-self:flex-start; background:#2a1650; color:#f3edff; }
+  .sac-msg.erro{ align-self:flex-start; background:#5a1a2a; color:#ffd9d9; }
+  #sac-form{ display:flex; gap:6px; padding:10px; border-top:1px solid rgba(243,237,255,0.1); }
+  #sac-input{
+    flex:1; padding:8px 10px; border-radius:8px; border:1px solid rgba(243,237,255,0.15);
+    background:#150a28; color:#f3edff; font-size:13px;
+  }
+  #sac-form button{
+    background:#26e8ff; color:#150a28; border:none; border-radius:8px;
+    padding:8px 12px; font-weight:700; font-size:12.5px; cursor:pointer;
+  }
+</style>
+
+<script>
+(function(){
+  const toggleBtn = document.getElementById('sac-toggle');
+  const closeBtn = document.getElementById('sac-close');
+  const box = document.getElementById('sac-box');
+  const messagesEl = document.getElementById('sac-messages');
+  const form = document.getElementById('sac-form');
+  const input = document.getElementById('sac-input');
+
+  toggleBtn.addEventListener('click', () => { box.hidden = !box.hidden; if(!box.hidden) input.focus(); });
+  closeBtn.addEventListener('click', () => { box.hidden = true; });
+
+  function addMsg(texto, classe){
+    const div = document.createElement('div');
+    div.className = 'sac-msg ' + classe;
+    div.textContent = texto;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const texto = input.value.trim();
+    if (!texto) return;
+
+    addMsg(texto, 'user');
+    input.value = '';
+    input.disabled = true;
+
+    try {
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: texto })
+      });
+      const dados = await resp.json();
+
+      if (!resp.ok) {
+        addMsg(dados.error || 'Deu erro, tenta de novo.', 'erro');
+      } else {
+        addMsg(dados.reply, 'bot');
+      }
+    } catch (err) {
+      addMsg('Não consegui falar com o servidor agora.', 'erro');
+    } finally {
+      input.disabled = false;
+      input.focus();
+    }
+  });
+})();
 </script>
 
 </body>
