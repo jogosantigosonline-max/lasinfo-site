@@ -3,9 +3,7 @@
 // Guarda a chave da Groq em segredo (variável de ambiente) e serve de "ponte"
 // entre o site e a API da Groq.
 
-// Modelo: confira a lista atualizada em https://console.groq.com/docs/models
-// (a Groq costuma trocar/aposentar modelos de tempos em tempos).
-const MODELO = "llama-3.1-8b-instant"; // rápido e barato, bom pra chat de live
+const MODELO = "openai/gpt-oss-20b"; // Atualizado para o modelo solicitado
 
 const PROMPT_SISTEMA = `Você é o "SAC Ignorante", o atendente virtual mal-humorado e
 sem paciência da live de retrogaming. Personagem, não pessoa de verdade.
@@ -31,10 +29,7 @@ outro jeito de pedir música):
 Se perguntarem sobre jogos (não música), oriente de forma parecida: usar
 "!jogo [console] [nome do jogo]" no chat, sempre com a mesma implicância.`;
 
-// Cooldown simples em memória por IP, pra não deixar uma pessoa martelar
-// pedidos e estourar o limite/custo da Groq. Em memória = reseta se a função
-// "dormir" (é aceitável pra esse uso; se quiser algo mais robusto, dá pra
-// usar Vercel KV/Upstash Redis depois).
+// Cooldown simples em memória por IP
 const ultimoPedidoPorIp = new Map();
 const COOLDOWN_MS = 8000; // 8 segundos entre mensagens por pessoa
 
@@ -61,7 +56,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Mensagem vazia" });
   }
 
-  // Limite de tamanho: evita gente colando textão e gastando tokens à toa
   const mensagemLimpa = message.trim().slice(0, 300);
 
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
