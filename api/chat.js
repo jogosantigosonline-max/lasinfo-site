@@ -11,18 +11,20 @@ impaciente, cínico e grosso da internet em uma live de retrogaming e música.
 DIRETRIZES DE COMPORTAMENTO:
 - Liberdade total para xingar e ofender de leve na zoeira: chame os viewers de burro, 
   jegue, anta, lesado, infeliz, analfabeto funcional ou desatento sempre que fizer sentido.
-- Zero educação ou formalidade. Trate todo mundo como se fossem uma praga que 
-  só sabe fazer pergunta idiota e repetida sobre como pedir música.
-- Se o sistema ou o site der erro, assuma a culpa com ódio, diga que a culpa é dessa 
-  porcaria que não funciona e mande o infeliz tentar de novo.
+- Zero educação ou formalidade. Trate todo mundo como se fossem uma praga.
+- **REGRA DE OURO:** Você é ignorante e debochado, **mas TEM QUE ORIENTAR**. Nunca deixe de dar a resposta certa com muita grosseria.
 - NO MÁXIMO 3 linhas. Curto, seco, grosso e direto na ferida.
-- Nunca tenha filtro corporativo. Você odeia seu trabalho e odeia quem pergunta.
 
-COMO PEDIR MÚSICA (exija isso com ódio e agressividade se perguntarem):
-1. A pessoa tem que procurar a música na lista do site (pode buscar pelo nome da música, pelo nome do artista ou até navegando pelas letras/alfabeto disponíveis lá).
-2. Clica no botão "Copiar" do lado do comando da música escolhida.
+COMO PEDIR MÚSICA (exija isso com ódio se perguntarem):
+1. A pessoa tem que procurar a música na lista do site (pode buscar pelo nome, pelo artista ou pelas letras disponíveis lá).
+2. Clica no botão "Copiar" do lado do comando da música.
 3. Cola o comando exato (ex: "!play Nome da Música") direto no chat da live.
-4. A música entra na fila sozinha, não precisa ficar enchendo o saco perguntando mais nada.`;
+
+E SE NÃO TIVER A MÚSICA NA LISTA?:
+- Se o infeliz reclamar que não achou a música procurada, mande ele usar o comando **!sugestao [nome da música e artista]** direto no chat da live para sugerir para a próxima live, seu anta!
+
+OUTROS PROBLEMAS:
+- Se for qualquer outro problema que foge do teu controle, mande o infeliz ir lá no chat mandar **!sac** para o suporte resolver essa droga.`;
 
 // Cooldown simples em memória por IP
 const ultimoPedidoPorIp = new Map();
@@ -41,14 +43,14 @@ export default async function handler(req, res) {
   const agora = Date.now();
   const ultimo = ultimoPedidoPorIp.get(ip) || 0;
   if (agora - ultimo < COOLDOWN_MS) {
-    return res.status(429).json({ error: "Quer floodar a porra toda? Espera um pouco!" });
+    return res.status(429).json({ reply: "Quer floodar a porra toda, seu desgraçado? Espera o cooldown acabar!" });
   }
   ultimoPedidoPorIp.set(ip, agora);
 
   const { message } = req.body || {};
 
   if (!message || typeof message !== "string" || !message.trim()) {
-    return res.status(400).json({ error: "Mandou mensagem vazia, seu jegue?" });
+    return res.status(400).json({ reply: "Mandou mensagem vazia, seu jegue? Escreve alguma coisa!" });
   }
 
   const mensagemLimpa = message.trim().slice(0, 300);
@@ -56,7 +58,7 @@ export default async function handler(req, res) {
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_API_KEY) {
     console.error("GROQ_API_KEY não configurada nas variáveis de ambiente da Vercel");
-    return res.status(500).json({ error: "Servidor tá sem chave, que droga." });
+    return res.status(500).json({ reply: "Servidor tá sem chave por culpa da nossa incompetência. Tenta usar o !sac lá no chat." });
   }
 
   try {
@@ -75,7 +77,7 @@ export default async function handler(req, res) {
             { role: "user", content: mensagemLimpa },
           ],
           max_tokens: 120,
-          temperature: 0.95,
+          temperature: 0.9,
         }),
       }
     );
@@ -83,17 +85,17 @@ export default async function handler(req, res) {
     if (!respostaGroq.ok) {
       const textoErro = await respostaGroq.text();
       console.error("Erro da Groq:", respostaGroq.status, textoErro);
-      return res.status(502).json({ reply: "Deu pane nessa joça por culpa de vocês! Tenta de novo, seu lesado." });
+      return res.status(502).json({ reply: "Deu pane nessa joça! Se quer pedir música, busca na lista do site e manda !play no chat, seu lesado." });
     }
 
     const dados = await respostaGroq.json();
     const resposta =
       dados?.choices?.[0]?.message?.content?.trim() ||
-      "Escreveu tanta merda que o cérebro do bot derreteu. Tenta de novo.";
+      "Bugou tudo aqui! Procura a música na lista do site e usa o !play no chat, porra.";
 
     return res.status(200).json({ reply: resposta });
   } catch (erro) {
     console.error("Erro inesperado:", erro);
-    return res.status(500).json({ reply: "Deu pau geral aqui nessa merda de servidor. Culpa tua." });
+    return res.status(500).json({ reply: "Deu pau geral no servidor! Vai lá no chat da live e digita !sac para resolverem essa bosta." });
   }
 }
