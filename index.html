@@ -97,6 +97,10 @@
   }
   .search-box input::placeholder{color:var(--muted);}
   .search-box input:focus{outline:2px solid var(--pink); outline-offset:2px;}
+  .search-hint{
+    font-family:'Space Mono',monospace; font-size:11px; color:var(--muted);
+    margin:6px 2px 0;
+  }
 
   /* Filtro por Letras do Alfabeto */
   .alphabet-bar {
@@ -142,6 +146,9 @@
   .row .info{min-width:0; margin-bottom:12px;}
   .row .artist{font-family:'Space Mono',monospace; font-size:11.5px; color:var(--cyan); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .row .song{font-weight:700; font-size:15px; color:var(--text); overflow-wrap:anywhere;}
+  .row .song mark{
+    background:rgba(255,63,164,0.35); color:inherit; border-radius:3px; padding:0 1px;
+  }
   .cmd-row{
     display:flex; align-items:center; gap:10px;
     background:var(--bg2); border:1px solid var(--line); border-radius:9px;
@@ -163,6 +170,7 @@
   .copy-btn.copied{background:linear-gradient(135deg, var(--cyan), #7dfcd0); }
 
   .empty{color:var(--muted); text-align:center; padding:40px 0; font-size:14px;}
+  .empty small{display:block; margin-top:6px; color:var(--muted); opacity:0.8;}
 
   footer{margin-top:40px; color:var(--muted); font-size:12.5px; text-align:center; border-top:1px solid var(--line); padding-top:18px;}
 
@@ -199,6 +207,7 @@
 
   <div class="search-box">
     <input id="search" type="text" placeholder="Buscar música ou artista..." autocomplete="off">
+    <div class="search-hint">dica: pode digitar sem acento e em qualquer ordem</div>
   </div>
 
   <!-- Barra de Filtro por Letra do Artista -->
@@ -210,7 +219,10 @@
   <div class="count" id="count"></div>
 
   <div class="list" id="list"></div>
-  <div class="empty" id="empty" style="display:none;">Nenhuma música encontrada.</div>
+  <div class="empty" id="empty" style="display:none;">
+    Nenhuma música encontrada.
+    <small>Tente digitar só uma parte do nome, sem acento.</small>
+  </div>
 
   <footer id="footer-count">músicas · toque em copiar e cole no chat</footer>
 </div>
@@ -404,12 +416,66 @@ function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
+// Remove acentos/diacríticos para permitir busca "coracao" -> "Coração"
+function stripAccents(str){
+  return String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function normalizeText(str){
+  return stripAccents(str).toLowerCase().trim();
+}
+
+// Destaca o trecho encontrado no nome da música (apenas visual, não muda o texto real)
+function highlight(original, tokens){
+  if (!tokens.length) return escapeHtml(original);
+  const normOriginal = normalizeText(original);
+  // Marca cada token encontrado, preservando o texto original (com acento) na tela
+  let ranges = [];
+  tokens.forEach(t => {
+    if (!t) return;
+    let start = 0;
+    let idx;
+    while ((idx = normOriginal.indexOf(t, start)) !== -1) {
+      ranges.push([idx, idx + t.length]);
+      start = idx + t.length;
+    }
+  });
+  if (!ranges.length) return escapeHtml(original);
+  ranges.sort((a,b) => a[0]-b[0]);
+  let merged = [ranges[0]];
+  ranges.slice(1).forEach(r => {
+    const last = merged[merged.length-1];
+    if (r[0] <= last[1]) { last[1] = Math.max(last[1], r[1]); }
+    else merged.push(r);
+  });
+  let out = '';
+  let pos = 0;
+  merged.forEach(([s,e]) => {
+    out += escapeHtml(original.slice(pos, s));
+    out += '<mark>' + escapeHtml(original.slice(s, e)) + '</mark>';
+    pos = e;
+  });
+  out += escapeHtml(original.slice(pos));
+  return out;
+}
+
+function setLetter(letter){
+  currentLetter = letter;
+  alphabetBar.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+  const target = alphabetBar.querySelector('[data-letter="' + letter + '"]');
+  if (target) target.classList.add('active');
+}
+
 function render(){
-  const q = searchEl.value.trim().toLowerCase();
-  
+  const qRaw = searchEl.value.trim();
+  const q = normalizeText(qRaw);
+  const tokens = q.split(/\s+/).filter(Boolean);
+
   const filtered = SONGS.filter(s => {
-    const matchesSearch = q === '' || s.musica.toLowerCase().includes(q) || s.artista.toLowerCase().includes(q);
-    const matchesLetter = currentLetter === 'ALL' || s.artista.trim().toUpperCase().startsWith(currentLetter);
+    const haystack = normalizeText(s.musica + ' ' + s.artista);
+    // todas as palavras digitadas precisam aparecer em algum lugar (ordem livre)
+    const matchesSearch = tokens.length === 0 || tokens.every(t => haystack.includes(t));
+    const matchesLetter = currentLetter === 'ALL' || normalizeText(s.artista).toUpperCase().startsWith(currentLetter);
     return matchesSearch && matchesLetter;
   });
 
@@ -420,15 +486,18 @@ function render(){
 
   const frag = document.createDocumentFragment();
   filtered.forEach((s, idx) => {
+    // remove espaços/quebras de linha acidentais do comando só na exibição/cópia,
+    // sem alterar o texto do comando em si
+    const comandoLimpo = s.comando.trim();
     const row = document.createElement('div');
     row.className = 'row';
     row.innerHTML =
       '<div class="info">' +
-        '<div class="artist">' + escapeHtml(s.artista) + '</div>' +
-        '<div class="song">' + escapeHtml(s.musica) + '</div>' +
+        '<div class="artist">' + highlight(s.artista, tokens) + '</div>' +
+        '<div class="song">' + highlight(s.musica, tokens) + '</div>' +
       '</div>' +
       '<div class="cmd-row">' +
-        '<div class="cmd-text">' + escapeHtml(s.comando) + '</div>' +
+        '<div class="cmd-text">' + escapeHtml(comandoLimpo) + '</div>' +
         '<button class="copy-btn" type="button" data-idx="' + idx + '">Copiar</button>' +
       '</div>';
     frag.appendChild(row);
@@ -438,7 +507,7 @@ function render(){
   listEl.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const idx = Number(btn.getAttribute('data-idx'));
-      const comando = filtered[idx].comando;
+      const comando = filtered[idx].comando.trim();
       try {
         await navigator.clipboard.writeText(comando);
       } catch (e) {
@@ -457,13 +526,18 @@ function render(){
   });
 }
 
-searchEl.addEventListener('input', () => render());
+searchEl.addEventListener('input', () => {
+  // se a pessoa já tinha clicado numa letra do alfabeto e agora está digitando,
+  // o filtro de letra escondido não deve mais esconder resultados da busca
+  if (searchEl.value.trim() !== '' && currentLetter !== 'ALL') {
+    setLetter('ALL');
+  }
+  render();
+});
 
 alphabetBar.addEventListener('click', (e) => {
   if(e.target.classList.contains('alpha-btn')){
-    alphabetBar.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
-    e.target.classList.add('active');
-    currentLetter = e.target.getAttribute('data-letter');
+    setLetter(e.target.getAttribute('data-letter'));
     render();
   }
 });
