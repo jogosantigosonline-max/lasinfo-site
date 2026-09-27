@@ -213,7 +213,6 @@
   <!-- Barra de Filtro por Letra do Artista -->
   <div class="alphabet-bar" id="alphabetBar">
     <button class="alpha-btn active" data-letter="ALL">Todas</button>
-    <!-- As letras serão geradas automaticamente pelo script -->
   </div>
 
   <div class="count" id="count"></div>
@@ -238,13 +237,16 @@ const SONGS = [
   {"artista": "Aerosmith", "musica": "I Don't Want To Miss A Thing", "comando": "!play I Don't Want To Miss"},
   {"artista": "AIR SUPPLY", "musica": "I Can Wait Forever", "comando": "!play I Can Wait Forever"},
   {"artista": "Alicia Keys", "musica": "You Don't Know My Name", "comando": "!play You Don't Know"},
+  {"artista": "Alphaville", "musica": "Big in Japan", "comando": "!play Big in Japan"},
+  {"artista": "Bad Religion", "musica": "American Jesus", "comando": "!play american jesus"},
   {"artista": "Barry Manilow", "musica": "Mandy", "comando": "!play Mandy"},
   {"artista": "Bee Gees", "musica": "Wish You Were Here", "comando": "!play Wish You Were Here"},
   {"artista": "Berlin", "musica": "Take My Breath Away Love Theme from", "comando": "!play Take My Breath Away "},
   {"artista": "bolshoi", "musica": "sunday", "comando": "!play sunday"},
+  {"artista": "Bonde do Tigrão", "musica": "Cerol na Mão", "comando": "!play cerol"},
+  {"artista": "bonde do tigrao", "musica": "o baile todo", "comando": "!play O Baile Todo"},
   {"artista": "Bon Jovi", "musica": "Bed Of Roses", "comando": "!play Bed Of Roses"},
   {"artista": "Bon Jovi", "musica": "Never Say Goodbye", "comando": "!play Never Say Goodbye"},
-  {"artista": "bonde do tigrao", "musica": "o baile todo", "comando": "!play O Baile Todo"},
   {"artista": "Bryan Adams", "musica": "Heaven", "comando": "!play Heaven"},
   {"artista": "Colin Firth", "musica": "Dancing Queen", "comando": "!play Dancing Queen"},
   {"artista": "coolio", "musica": "gangster paradise", "comando": "!play paradise"},
@@ -286,7 +288,9 @@ const SONGS = [
   {"artista": "Guilherme Arantes", "musica": "Cheia de Charme Ao Vivo", "comando": "!play Cheia de Charme "},
   {"artista": "Guns N' Roses", "musica": "November Rain", "comando": "!play November Rain"},
   {"artista": "Guns N' Roses", "musica": "Sweet Child O' Mine", "comando": "!play Sweet Child O' Mine"},
+  {"artista": "HypeRave", "musica": "Disparate Youth (Hypertechno)", "comando": "!play DISPARATE YOUTH"},
   {"artista": "ICEHOUSE", "musica": "No Promises", "comando": "!play No Promises"},
+  {"artista": "Information Society", "musica": "Repetition", "comando": "!play Repetition"},
   {"artista": "Irene Cara", "musica": "What A Feeling", "comando": "!play What A Feeling"},
   {"artista": "JOANA", "musica": "TO FAZENDO FALTA", "comando": "!play Tô Fazendo Falta"},
   {"artista": "Kate Bush", "musica": "Wuthering Heights", "comando": "!play Wuthering Heights"},
@@ -317,6 +321,8 @@ const SONGS = [
   {"artista": "Madonna", "musica": "Material Girl ", "comando": "!play Material Girl"},
   {"artista": "Madonna", "musica": "La Isla Bonita Extended Remix", "comando": "!play La Isla Bonita "},
   {"artista": "Madonna", "musica": "Live to Tell", "comando": "!play Live to Tell"},
+  {"artista": "Marina Lima", "musica": "Fullgás", "comando": "!play Fullgás"},
+  {"artista": "Marina Lima", "musica": "Virgem", "comando": "!play virgem"},
   {"artista": "Matway", "musica": "Walking Away Infinity", "comando": "!play Walking Away "},
   {"artista": "Metallica", "musica": "The Unforgiven", "comando": "!play The Unforgiven"},
   {"artista": "Miami Sound Machine", "musica": "bad boy", "comando": "!play bad"},
@@ -325,7 +331,10 @@ const SONGS = [
   {"artista": "Michael Sembello", "musica": "Maniac", "comando": "!play Maniac"},
   {"artista": "n trace", "musica": "stayin a live", "comando": "!play stayin"},
   {"artista": "Nelly Furtado", "musica": "Promiscuous", "comando": "!play Promiscuous"},
+  {"artista": "New Order", "musica": "Bizarre Love Triangle", "comando": "!play Love Triangle"},
   {"artista": "NIRVANA", "musica": "Smells Like Teen ", "comando": "!play  Smells Like Teen "},
+  {"artista": "No Mercy", "musica": "Baby Come Back", "comando": "!play Baby Come Back"},
+  {"artista": "No Mercy", "musica": "When I Die (Radio Version)", "comando": "!play When I Die"},
   {"artista": "oingo boingo", "musica": "stay", "comando": "!play stay"},
   {"artista": "Patrick Hernandez", "musica": "Born to Be Alive The Original", "comando": "!play Born "},
   {"artista": "Pet Shop Boys", "musica": "Always on My Mind 2003 Remaster", "comando": "!play Always "},
@@ -345,11 +354,10 @@ const SONGS = [
   {"artista": "Roupa Nova", "musica": "Coração Pirata", "comando": "!play Coração Pirata"},
   {"artista": "Roupa Nova", "musica": "Whisky à Go-Go", "comando": "!play Whisky à Go-Go"},
   {"artista": "Roupa Nova", "musica": "agora sim", "comando": "!play agora sim"},
-  {"artista": "Roupa Nova", "musica": "a viajem", "comando": " A Viagem"},
+  {"artista": "Roupa Nova", "musica": "A Viagem", "comando": "!play A Viagem"},
   {"artista": "Roupa Nova", "musica": "a força do amor", "comando": "!play a força do amor"},
   {"artista": "Roupa Nova", "musica": "meu universo e voce", "comando": "!play meu universo"},
   {"artista": "ROUPA NOVA", "musica": "TREM AZUL", "comando": "!play trem azul"},
-  {"artista": "Roupa Nova", "musica": "coracao pirata", "comando": "!play Coração Pirata"},
   {"artista": "Roupa Nova", "musica": "deixa o amor acontecer", "comando": "!play deixa o amor acontecer"},
   {"artista": "Roupa Nova", "musica": "Dona Ao Vivo", "comando": "!play Dona "},
   {"artista": "Roupa Nova", "musica": "Sapato Velho Ao Vivo", "comando": "!play Sapato Velho "},
@@ -377,6 +385,7 @@ const SONGS = [
   {"artista": "Survivor", "musica": "Eye of the Tiger", "comando": "!play Eye of the Tiger"},
   {"artista": "TALK TALK", "musica": "It's My Life", "comando": "!PLAY MY LIFE"},
   {"artista": "Tears For Fears", "musica": "Everybody Wants To Rule The World", "comando": "!play Everybody Wants To Rule The World"},
+  {"artista": "Tears For Fears", "musica": "Sowing The Seeds Of Love", "comando": "!play Seeds Of Love"},
   {"artista": "Tears For Fears", "musica": "Sowing The Seeds Of Love Alternate Mix", "comando": "!play Sowing The Seeds "},
   {"artista": "Território Negro", "musica": "Aquele Abraço", "comando": "!play aquele abraço"},
   {"artista": "The Alan Parsons Project", "musica": "Time", "comando": "!play Time"},
@@ -402,7 +411,6 @@ const alphabetBar = document.getElementById('alphabetBar');
 
 let currentLetter = 'ALL';
 
-// Gerar botões do alfabeto dinamicamente
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 alphabet.forEach(letter => {
   const btn = document.createElement('button');
@@ -416,7 +424,6 @@ function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-// Remove acentos/diacríticos para permitir busca "coracao" -> "Coração"
 function stripAccents(str){
   return String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -425,11 +432,9 @@ function normalizeText(str){
   return stripAccents(str).toLowerCase().trim();
 }
 
-// Destaca o trecho encontrado no nome da música (apenas visual, não muda o texto real)
 function highlight(original, tokens){
   if (!tokens.length) return escapeHtml(original);
   const normOriginal = normalizeText(original);
-  // Marca cada token encontrado, preservando o texto original (com acento) na tela
   let ranges = [];
   tokens.forEach(t => {
     if (!t) return;
@@ -473,7 +478,6 @@ function render(){
 
   const filtered = SONGS.filter(s => {
     const haystack = normalizeText(s.musica + ' ' + s.artista);
-    // todas as palavras digitadas precisam aparecer em algum lugar (ordem livre)
     const matchesSearch = tokens.length === 0 || tokens.every(t => haystack.includes(t));
     const matchesLetter = currentLetter === 'ALL' || normalizeText(s.artista).toUpperCase().startsWith(currentLetter);
     return matchesSearch && matchesLetter;
@@ -486,8 +490,6 @@ function render(){
 
   const frag = document.createDocumentFragment();
   filtered.forEach((s, idx) => {
-    // remove espaços/quebras de linha acidentais do comando só na exibição/cópia,
-    // sem alterar o texto do comando em si
     const comandoLimpo = s.comando.trim();
     const row = document.createElement('div');
     row.className = 'row';
@@ -527,8 +529,6 @@ function render(){
 }
 
 searchEl.addEventListener('input', () => {
-  // se a pessoa já tinha clicado numa letra do alfabeto e agora está digitando,
-  // o filtro de letra escondido não deve mais esconder resultados da busca
   if (searchEl.value.trim() !== '' && currentLetter !== 'ALL') {
     setLetter('ALL');
   }
@@ -545,15 +545,7 @@ alphabetBar.addEventListener('click', (e) => {
 render();
 </script>
 
-<!--
-  WIDGET DO SAC IGNORANTE
-  Cole este bloco inteiro dentro do <body> do seu site (ex: no final,
-  antes de fechar </body>). Ele já vem com estilo próprio, então não deve
-  bagunçar o CSS existente do resto da página.
-
-  Ele chama /api/chat, que precisa estar publicado no MESMO domínio da
-  Vercel (por isso funciona sem configurar CORS).
--->
+<!-- WIDGET DO SAC IGNORANTE -->
 <div id="sac-widget">
   <button id="sac-toggle" type="button" aria-label="Abrir chat SAC Ignorante">💬 SAC</button>
 
@@ -637,15 +629,15 @@ render();
     input.disabled = true;
 
     try {
-      const resp = await fetch('/api/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: texto })
       });
-      const dados = await resp.json();
+      const dados = await response.json();
 
-      if (!resp.ok) {
-        addMsg(dados.error || 'Deu erro, tenta de novo.', 'erro');
+      if (!response.ok) {
+        addMsg(dados.error || 'Deu ruim aqui, tenta de novo.', 'erro');
       } else {
         addMsg(dados.reply, 'bot');
       }
