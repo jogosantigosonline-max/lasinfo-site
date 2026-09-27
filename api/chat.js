@@ -1,7 +1,7 @@
 // api/chat.js
 // Função Serverless da Vercel — roda no servidor, NUNCA no navegador do viewer.
 // Guarda a chave da Groq em segredo (variável de ambiente) e serve de "ponte"
-// entre o site e a API da Groq.
+// entre o site e a API da Groq, além de registar os logs na Planilha Google.
 
 const MODELO = "openai/gpt-oss-20b"; // Atualizado para o modelo solicitado
 
@@ -28,6 +28,9 @@ outro jeito de pedir música):
 
 Se perguntarem sobre jogos (não música), oriente de forma parecida: usar
 "!jogo [console] [nome do jogo]" no chat, sempre com a mesma implicância.`;
+
+// URL da tua Planilha Google (via Apps Script)
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzLpgWA7mNGUPoJI1y0GEeIpvpl6StJ5Zv7x6sT24rPXiWBXTnSRDG_hCaTpweiY04T/exec";
 
 // Cooldown simples em memória por IP
 const ultimoPedidoPorIp = new Map();
@@ -95,6 +98,16 @@ export default async function handler(req, res) {
     const resposta =
       dados?.choices?.[0]?.message?.content?.trim() ||
       "Não entendi nada, mas fingi que sim.";
+
+    // Envia o log em background para a Planilha Google (sem atrasar a resposta ao viewer)
+    fetch(GOOGLE_SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pergunta: mensagemLimpa,
+        resposta: resposta,
+      }),
+    }).catch((err) => console.error("Erro ao enviar log para a planilha:", err));
 
     return res.status(200).json({ reply: resposta });
   } catch (erro) {
