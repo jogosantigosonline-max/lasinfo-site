@@ -67,18 +67,21 @@
   .widget-title { font-family:'Space Mono',monospace; font-size:12px; color:var(--cyan); margin-bottom:8px; font-weight:700; }
   audio { width: 100%; border-radius: 8px; outline: none; margin-top: 6px; height: 36px; }
 
-  /* Bloco Las Indica (Mercado Livre) */
+  /* Bloco Las Indica (Mercado Livre) com Transição */
   .ad-box {
     background: linear-gradient(135deg, #1c0f38, #2a154f);
     border: 1px solid var(--ml-yellow);
     position: relative; overflow: hidden;
+  }
+  .ad-content-wrapper {
+    transition: opacity 0.4s ease-in-out;
   }
   .ad-tag {
     background: var(--ml-yellow); color: #111; font-size: 10px;
     font-weight: 800; padding: 2px 6px; border-radius: 4px;
     display: inline-block; margin-bottom: 6px; text-transform: uppercase; width: fit-content;
   }
-  .ad-name { font-weight: 700; font-size: 14px; color: var(--text); margin-bottom: 8px; line-height: 1.3; }
+  .ad-name { font-weight: 700; font-size: 14px; color: var(--text); margin-bottom: 8px; line-height: 1.3; min-height: 36px; }
   .ad-btn {
     display: inline-block; background: var(--ml-yellow); color: #111;
     padding: 8px 14px; border-radius: 8px; font-weight: 800;
@@ -188,7 +191,7 @@
     <p class="lede">Busque pelo nome da música ou do artista, toque em <b>copiar comando</b> e cole no chat da live. 🎶</p>
   </header>
 
-  <!-- Secção Superior: Som Ambiente + "Las Indica" (Atari Miniatura) -->
+  <!-- Secção Superior: Som Ambiente + "Las Indica" (Carrossel Automático) -->
   <div class="top-widgets">
     <div class="widget-box">
       <div class="widget-title">🎧 SOM AMBIENTE</div>
@@ -199,9 +202,11 @@
     </div>
 
     <div class="widget-box ad-box">
-      <span class="ad-tag">Las Indica 🛒</span>
-      <div class="ad-name">Miniatura Console Atari 2600 Escala 1:5 Retrô</div>
-      <a href="https://meli.la/2U1nSJH" target="_blank" class="ad-btn">Ver Oferta no Mercado Livre 🔗</a>
+      <div class="ad-content-wrapper" id="adContainer">
+        <span class="ad-tag">Las Indica 🛒</span>
+        <div class="ad-name" id="adName">Carregando oferta...</div>
+        <a href="#" target="_blank" class="ad-btn" id="adLink">Ver Oferta no Mercado Livre 🔗</a>
+      </div>
     </div>
   </div>
 
@@ -227,6 +232,50 @@
 </div>
 
 <script>
+// Lista de Produtos do carrossel "Las Indica"
+const ADS = [
+  { nome: "Miniatura Console Atari 2600 Escala 1:5 Retrô", link: "https://meli.la/2U1nSJH" },
+  { nome: "Oferta Especial Mercado Livre #1", link: "https://meli.la/1UWTxKh" },
+  { nome: "Oferta Especial Mercado Livre #2", link: "https://meli.la/11jCoZu" },
+  { nome: "Oferta Especial Mercado Livre #3", link: "https://meli.la/2YZu84P" },
+  { nome: "Oferta Especial Mercado Livre #4", link: "https://meli.la/1NMLJz5" },
+  { nome: "Oferta Especial Mercado Livre #5", link: "https://meli.la/2SaaBwg" },
+  { nome: "Oferta Especial Mercado Livre #6", link: "https://meli.la/2Bxi9NE" },
+  { nome: "Oferta Especial Mercado Livre #7", link: "https://meli.la/1H5peLy" }
+];
+
+let currentAdIndex = 0;
+const adContainer = document.getElementById('adContainer');
+const adNameEl = document.getElementById('adName');
+const adLinkEl = document.getElementById('adLink');
+
+function rotateAds() {
+  if(!adContainer || !adNameEl || !adLinkEl) return;
+  
+  // Efeito de fade out
+  adContainer.style.opacity = 0;
+  
+  setTimeout(() => {
+    currentAdIndex = (currentAdIndex + 1) % ADS.length;
+    const currentAd = ADS[currentAdIndex];
+    
+    adNameEl.textContent = currentAd.nome;
+    adLinkEl.href = currentAd.link;
+    
+    // Efeito de fade in
+    adContainer.style.opacity = 1;
+  }, 400);
+}
+
+// Inicia a troca a cada 5 segundos
+setInterval(rotateAds, 5000);
+
+// Configuração inicial do primeiro anúncio
+if(adNameEl && adLinkEl){
+  adNameEl.textContent = ADS[0].nome;
+  adLinkEl.href = ADS[0].link;
+}
+
 const SONGS = [
   {"artista": "199899 - Bruce Hornsby", "musica": "The Way It Is", "comando": "!play The Way It Is"},
   {"artista": "a-ha", "musica": "Cry Wolf 2016 Remaster", "comando": "!play Cry Wolf "},
@@ -250,9 +299,14 @@ const SONGS = [
   {"artista": "bonde do tigrao", "musica": "o baile todo", "comando": "!play O Baile Todo"},
   {"artista": "Bon Jovi", "musica": "Bed Of Roses", "comando": "!play Bed Of Roses"},
   {"artista": "Bon Jovi", "musica": "Never Say Goodbye", "comando": "!play Never Say Goodbye"},
+  {"artista": "Bruno & Marrone", "musica": "Dormi na Praça Ao Vivo", "comando": "!play Dormi na Praça"},
   {"artista": "Bryan Adams", "musica": "Heaven", "comando": "!play Heaven"},
+  {"artista": "Charlie Brown Jr.", "musica": "Só Os Loucos Sabem", "comando": "!play Só Os Loucos"},
+  {"artista": "Claudinho & Buchecha", "musica": "Fico Assim Sem Você", "comando": "!play Sem Você"},
+  {"artista": "Claudinho & Buchecha", "musica": "Quero Te Encontrar", "comando": "!play Te Encontrar"},
   {"artista": "Colin Firth", "musica": "Dancing Queen", "comando": "!play Dancing Queen"},
   {"artista": "coolio", "musica": "gangster paradise", "comando": "!play paradise"},
+  {"artista": "Cyndi Lauper", "musica": "All Through the Night", "comando": "!play the Night"},
   {"artista": "Cyndi Lauper", "musica": "Girls Just Want to Have Fun", "comando": "!play Girls Just Want"},
   {"artista": "Cyndi Lauper", "musica": "Time After Time", "comando": "!play Time After"},
   {"artista": "Cyndi Lauper", "musica": "True Colors", "comando": "!play True Colors"},
@@ -328,6 +382,8 @@ const SONGS = [
   {"artista": "Marina Lima", "musica": "Fullgás", "comando": "!play Fullgás"},
   {"artista": "Marina Lima", "musica": "Virgem", "comando": "!play virgem"},
   {"artista": "Matway", "musica": "Walking Away Infinity", "comando": "!play Walking Away "},
+  {"artista": "MC Marcinho", "musica": "Garota Nota 100", "comando": "!play Garota Nota 100"},
+  {"artista": "MC Marcinho", "musica": "Rap do Solitário", "comando": "!play Rap do Solitário"},
   {"artista": "Metallica", "musica": "The Unforgiven", "comando": "!play The Unforgiven"},
   {"artista": "Miami Sound Machine", "musica": "bad boy", "comando": "!play bad"},
   {"artista": "Michael Jackson", "musica": "Earth Song", "comando": "!play Earth Song"},
@@ -350,6 +406,7 @@ const SONGS = [
   {"artista": "Phil Collins", "musica": "Two Hearts 2016 Remaster", "comando": "!play Two Hearts "},
   {"artista": "Pink Floyd", "musica": "High Hopes Live", "comando": "!play High Hopes "},
   {"artista": "Propaganda", "musica": "Duel Bittersweet", "comando": "!play Duel "},
+  {"artista": "Raça Negra", "musica": "Que Pena", "comando": "!play Que Pena"},
   {"artista": "Remix ", "musica": "Losing My Religion", "comando": "!play  Losing My Religion"},
   {"artista": "Remix Kingz", "musica": "Ghostbusters 808 Remix", "comando": "!play Ghostbusters "},
   {"artista": "Rick James", "musica": "Super Freak", "comando": "!play Super Freak"},
@@ -373,6 +430,8 @@ const SONGS = [
   {"artista": "Simon Garfunkel", "musica": "Bridge Over Troubled Water", "comando": "!play Bridge Over Troubled Water"},
   {"artista": "Sinad OConnor", "musica": "Nothing Compares 2 U", "comando": "!play Nothing Compares 2 U"},
   {"artista": "Snap", "musica": "Rhythm Is a Dancer", "comando": "!play Rhythm Is a Dancer"},
+  {"artista": "Soweto", "musica": "Derê", "comando": "!play Derê"},
+  {"artista": "Soweto", "musica": "Tempo De Aprender", "comando": "!play Tempo De Aprender"},
   {"artista": "Spandau Ballet", "musica": "True Live at Live Aid Wembley Stadium 13th July 1985", "comando": "!play True "},
   {"artista": "spc", "musica": "Sai da Minha Aba", "comando": "!play Sai da Minha Aba"},
   {"artista": "spc", "musica": "Quando é Amor", "comando": "!play Quando é Amor"},
@@ -398,11 +457,14 @@ const SONGS = [
   {"artista": "The Cranberries", "musica": "Dreams", "comando": "!play Dreams\n"},
   {"artista": "The Cranberries", "musica": "So Cold In Ireland", "comando": " !play So Cold In Ireland"},
   {"artista": "The Cranberries", "musica": " Linger", "comando": "!play Linger"},
+  {"artista": "The Doggies", "musica": "Who Let The Dogs Out", "comando": "!play Who Let The Dogs"},
   {"artista": "The Housemartins", "musica": "Build", "comando": "!play Build"},
   {"artista": "The Human League", "musica": "Human Remastered 2003", "comando": "!play Human "},
   {"artista": "The Outfield", "musica": "Your Love", "comando": "!play Your Love"},
   {"artista": "The Verve", "musica": "Bitter Sweet Symphony Extended Version", "comando": "!play Bitter Sweet Symphony "},
   {"artista": "Tim Maia", "musica": "Ela Partiu", "comando": "!play Ela Partiu"},
+  {"artista": "Tim Maia", "musica": "Princesa (Vai Chuva)", "comando": "!play Primavera"},
+  {"artista": "Tim Maia", "musica": "Que Beleza", "comando": "!play Que Beleza"},
   {"artista": "Tim Moore", "musica": "Yes", "comando": "!play Yes"},
   {"artista": "Yahoo", "musica": "Mordida De Amor", "comando": "!play Mordida De Amor"}
 ];
@@ -528,158 +590,4 @@ function render(){
       const original = btn.textContent;
       btn.textContent = 'Copiado!';
       btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1400);
-    });
-  });
-}
-
-searchEl.addEventListener('input', () => {
-  if (searchEl.value.trim() !== '' && currentLetter !== 'ALL') {
-    setLetter('ALL');
-  }
-  render();
-});
-
-alphabetBar.addEventListener('click', (e) => {
-  if(e.target.classList.contains('alpha-btn')){
-    setLetter(e.target.getAttribute('data-letter'));
-    render();
-  }
-});
-
-render();
-</script>
-
-<!-- WIDGET DO SAC IGNORANTE (Tamanho mais compacto) -->
-<div id="sac-widget">
-  <button id="sac-toggle" type="button" aria-label="Abrir chat SAC Ignorante">💬 SAC</button>
-
-  <div id="sac-box" hidden>
-    <div id="sac-header">
-      <span>🎤 SAC Ignorante</span>
-      <button id="sac-close" type="button" aria-label="Fechar">✕</button>
-    </div>
-    <div id="sac-messages"></div>
-    <form id="sac-form">
-      <input id="sac-input" type="text" placeholder="Manda sua dúvida..." maxlength="300" autocomplete="off">
-      <button type="submit">Enviar</button>
-    </form>
-  </div>
-</div>
-
-<style>
-  #sac-widget{ position:fixed; right:14px; bottom:14px; z-index:9999; font-family:sans-serif; }
-  #sac-toggle{
-    background:#ff3fa4; color:#150a28; border:none; border-radius:999px;
-    padding:10px 16px; font-weight:700; font-size:13px; cursor:pointer;
-    box-shadow:0 6px 20px -6px rgba(0,0,0,0.5);
-  }
-  #sac-box{
-    position:absolute; right:0; bottom:50px; width:270px; max-width:85vw;
-    background:#1c0f38; border:1px solid rgba(243,237,255,0.15); border-radius:12px;
-    display:flex; flex-direction:column; overflow:hidden;
-    box-shadow:0 16px 40px -10px rgba(0,0,0,0.6);
-  }
-  #sac-header{
-    display:flex; justify-content:space-between; align-items:center;
-    background:#26123f; color:#f3edff; padding:8px 10px; font-weight:700; font-size:12px;
-  }
-  #sac-header button{ background:none; border:none; color:#b8a9dd; cursor:pointer; font-size:14px; padding:0 4px; }
-  #sac-messages{
-    flex:1; max-height:210px; overflow-y:auto; padding:8px 10px;
-    display:flex; flex-direction:column; gap:6px; font-size:12px;
-  }
-  .sac-msg{ padding:6px 8px; border-radius:8px; max-width:88%; line-height:1.3; }
-  .sac-msg.user{ align-self:flex-end; background:#ff3fa4; color:#150a28; }
-  .sac-msg.bot{ align-self:flex-start; background:#2a1650; color:#f3edff; }
-  .sac-msg.erro{ align-self:flex-start; background:#5a1a2a; color:#ffd9d9; }
-  #sac-form{ display:flex; gap:4px; padding:8px; border-top:1px solid rgba(243,237,255,0.1); }
-  #sac-input{
-    flex:1; padding:6px 8px; border-radius:6px; border:1px solid rgba(243,237,255,0.15);
-    background:#150a28; color:#f3edff; font-size:12px;
-  }
-  #sac-form button{
-    background:#26e8ff; color:#150a28; border:none; border-radius:6px;
-    padding:6px 10px; font-weight:700; font-size:11.5px; cursor:pointer;
-  }
-</style>
-
-<script>
-(function(){
-  const toggleBtn = document.getElementById('sac-toggle');
-  const closeBtn = document.getElementById('sac-close');
-  const box = document.getElementById('sac-box');
-  const form = document.getElementById('sac-form');
-  const input = document.getElementById('sac-input');
-  const messages = document.getElementById('sac-messages');
-
-  if(!toggleBtn || !closeBtn || !box || !form || !input || !messages) return;
-
-  toggleBtn.addEventListener('click', () => {
-    const isHidden = box.hasAttribute('hidden');
-    if (isHidden) {
-      box.removeAttribute('hidden');
-      input.focus();
-      if(messages.children.length === 0){
-        appendMsg('bot', '[Atendente Zorg] Fala logo o que tu quer, infeliz! Procura na lista ou manda !play.');
-      }
-    } else {
-      box.setAttribute('hidden', '');
-    }
-  });
-
-  closeBtn.addEventListener('click', () => {
-    box.setAttribute('hidden', '');
-  });
-
-  function appendMsg(sender, text){
-    const div = document.createElement('div');
-    div.className = 'sac-msg ' + sender;
-    div.textContent = text;
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const text = input.value.trim();
-    if(!text) return;
-
-    input.value = '';
-    appendMsg('user', text);
-
-    const loadingId = 'load-' + Date.now();
-    const loadDiv = document.createElement('div');
-    loadDiv.className = 'sac-msg bot';
-    loadDiv.id = loadingId;
-    loadDiv.textContent = '...resmungando resposta...';
-    messages.appendChild(loadDiv);
-    messages.scrollTop = messages.scrollHeight;
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      });
-      const data = await res.json();
-      
-      const el = document.getElementById(loadingId);
-      if(el) el.remove();
-
-      if(res.ok && data.reply){
-        appendMsg('bot', data.reply);
-      } else {
-        appendMsg('erro', data.reply || '[Atendente Glitch] Deu erro nessa porcaria!');
-      }
-    } catch(err) {
-      const el = document.getElementById(loadingId);
-      if(el) el.remove();
-      appendMsg('erro', '[Atendente Caos] Falha de conexão com o servidor!');
-    }
-  });
-})();
-</script>
-
-</body>
-</html>
+      setTimeout(() => { btn.textContent = original; btn.classList.remove('copied
