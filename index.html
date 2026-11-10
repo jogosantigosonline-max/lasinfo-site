@@ -626,7 +626,7 @@ function renderSongs() {
 }
 
 function escapeHtml(text) {
-  return text.replace(/'/g, "\\'").replace("/g, '\\"');
+  return text.replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
 function copyCommand(button, text) {
@@ -639,7 +639,7 @@ function copyCommand(button, text) {
       button.classList.remove('copied');
     }, 1500);
   }).catch(err => {
-    console.err('Erro ao copiar: ', err);
+    console.error('Erro ao copiar: ', err);
   });
 }
 
